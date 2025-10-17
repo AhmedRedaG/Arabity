@@ -8,14 +8,14 @@ export class ResetPasswordMail {
   constructor(private configService: ConfigService) {}
 
   createMail(user: User, otp: number): SendMailOptions {
-    const serverEmail = this.configService.get<string>('email.serverEmail');
+    const senderEmail = this.configService.get<string>('email.senderEmail');
     const companyName = this.configService.get<string>('company.name');
     const firstName = user.firstName || 'there';
     const expiresInMS = this.configService.get<number>('otp.expiresInMS')!;
     const expiresInMinutes = Math.ceil(expiresInMS / 60000);
 
     const mailOptions: SendMailOptions = {
-      from: `"${companyName}" <${serverEmail}>`,
+      from: `"${companyName}" <${senderEmail}>`,
       to: user.email,
       subject: `Your ${companyName} Password Reset Code`,
       text: this.generatePlainTextContent(firstName, otp, expiresInMinutes),

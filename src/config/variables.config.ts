@@ -1,3 +1,7 @@
+import { sensitiveHeaders } from "http2";
+import { send } from "process";
+import { LockNotSupportedOnGivenDriverError } from "typeorm";
+
 export default () => ({
   auth: {
     path: '/auth',
@@ -51,6 +55,7 @@ export default () => ({
     smtpSecure: false,
     serverEmail: process.env.SERVER_MAIL,
     serverEmailPass: process.env.SERVER_MAIL_PASS,
+    senderEmail: process.env.SENDER_MAIL || process.env.SERVER_MAIL,
     supportEmail: process.env.SUPPORT_MAIL || process.env.SERVER_MAIL,
   },
 });
