@@ -1,0 +1,18 @@
+import { forwardRef, Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from 'src/user/user.module';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthAttempt } from 'src/typeorm/entities/auth/auth-attempt.entity';
+import { Otp } from 'src/typeorm/entities/auth/otp.entity';
+import { AuthUtilsService } from './auth-utils.service';
+
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([AuthAttempt, Otp]),
+    JwtModule.register({}),
+    forwardRef(() => UserModule),
+  ],
+  providers: [AuthUtilsService],
+  exports: [AuthUtilsService],
+})
+export class AuthUtilsModule {}
