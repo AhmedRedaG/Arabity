@@ -8,14 +8,14 @@ export class VerifyAccountMail {
   constructor(private configService: ConfigService) {}
 
   createMail(user: User, verificationToken: string): SendMailOptions {
-    const serverEmail = this.configService.get<string>('email.serverEmail');
+    const senderEmail = this.configService.get<string>('email.senderEmail');
     const clientUrl = this.configService.get<string>('client.baseUrl');
     const companyName = this.configService.get<string>('company.name');
     const verifyUrl = `${clientUrl}/verify-account/${verificationToken}`;
     const firstName = user.firstName || 'there';
 
     const mailOptions: SendMailOptions = {
-      from: `"${companyName}" <${serverEmail}>`,
+      from: `"${companyName}" <${senderEmail}>`,
       to: user.email,
       subject: `Verify Your ${companyName} Account`,
       text: this.generatePlainTextContent(firstName, verifyUrl),
