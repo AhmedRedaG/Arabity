@@ -83,14 +83,9 @@ export class AuthService {
     if (user.isVerified) {
       throw new BadRequestException('user already verified');
     }
-    user.isVerified = true;
     await this.userService.confirmVerification(userId);
 
-    const accessToken = await this.authUtilsService.generateAuthTokens({
-      sub: userId,
-    });
-
-    return { user, accessToken };
+    return { message: 'user has been verified successfully' };
   }
 
   async login(loginDto: LocalLoginDto) {

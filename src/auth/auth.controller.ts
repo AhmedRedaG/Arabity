@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -31,7 +32,7 @@ export class AuthController {
     return data;
   }
 
-  @Patch('verify/:verificationToken')
+  @Get('verify/:verificationToken')
   async verify(@Param('verificationToken') verificationToken: string) {
     const data = await this.authService.verify(verificationToken);
 
