@@ -9,9 +9,9 @@ export class VerifyAccountMail {
 
   createMail(user: User, verificationToken: string): SendMailOptions {
     const senderEmail = this.configService.get<string>('email.senderEmail');
-    const clientUrl = this.configService.get<string>('client.baseUrl');
+    const apiUrl = this.configService.get<string>('api.baseUrl');
     const companyName = this.configService.get<string>('company.name');
-    const verifyUrl = `${clientUrl}/verify-account/${verificationToken}`;
+    const verifyUrl = `${apiUrl}/auth/verify/${verificationToken}`;
     const firstName = user.firstName || 'there';
 
     const mailOptions: SendMailOptions = {

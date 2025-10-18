@@ -1,7 +1,3 @@
-import { sensitiveHeaders } from "http2";
-import { send } from "process";
-import { LockNotSupportedOnGivenDriverError } from "typeorm";
-
 export default () => ({
   auth: {
     path: '/auth',
@@ -31,6 +27,7 @@ export default () => ({
   },
 
   client: { baseUrl: 'http://localhost:8080' },
+  api: { baseUrl: 'https://arabity.vercel.app' },
 
   company: { name: 'Arabity' },
 
