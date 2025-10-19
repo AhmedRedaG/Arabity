@@ -1,38 +1,51 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SendMailOptions } from 'nodemailer';
 import { User } from 'src/typeorm/entities/user/user.entity';
+import { BrevoMailOptions } from '../types/email-options.types';
 
 @Injectable()
 export class ResetPasswordMail {
   constructor(private configService: ConfigService) {}
 
-  createMail(user: User, otp: number): SendMailOptions {
-    const senderEmail = this.configService.get<string>('email.senderEmail');
-    const companyName = this.configService.get<string>('company.name');
+  createMail(user: User, otp: number): BrevoMailOptions {
+    const senderEmail = this.configService.get<string>('email.senderEmail')!;
+    const supportEmail = this.configService.get<string>('email.supportEmail')!;
+    const companyName = this.configService.get<string>('company.name')!;
     const firstName = user.firstName || 'there';
     const expiresInMS = this.configService.get<number>('otp.expiresInMS')!;
     const expiresInMinutes = Math.ceil(expiresInMS / 60000);
 
-    const mailOptions: SendMailOptions = {
-      from: `"${companyName}" <${senderEmail}>`,
-      to: user.email,
+    return {
+      sender: {
+        email: senderEmail,
+        name: companyName,
+      },
+      to: [{ email: user.email, name: firstName }],
       subject: `Your ${companyName} Password Reset Code`,
-      text: this.generatePlainTextContent(firstName, otp, expiresInMinutes),
-      html: this.generateHtmlContent(firstName, otp, expiresInMinutes),
+      textContent: this.generatePlainTextContent(
+        supportEmail,
+        companyName,
+        firstName,
+        otp,
+        expiresInMinutes,
+      ),
+      htmlContent: this.generateHtmlContent(
+        supportEmail,
+        companyName,
+        firstName,
+        otp,
+        expiresInMinutes,
+      ),
     };
-
-    return mailOptions;
   }
 
   private generatePlainTextContent(
+    supportEmail: string,
+    companyName: string,
     firstName: string,
     otp: number,
     expiresInMinutes: number,
   ) {
-    const supportEmail = this.configService.get<string>('email.supportEmail');
-    const companyName = this.configService.get<string>('company.name');
-
     return `
 Hi ${firstName},
 
@@ -50,12 +63,12 @@ Need help? Contact us at ${supportEmail}`;
   }
 
   private generateHtmlContent(
+    supportEmail: string,
+    companyName: string,
     firstName: string,
     otp: number,
     expiresInMinutes: number,
   ) {
-    const supportEmail = this.configService.get<string>('email.supportEmail');
-    const companyName = this.configService.get<string>('company.name');
     return `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 30px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f9f9f9;">
   <h2 style="text-align: center; color: #333;">🔒 Reset Your Password</h2>

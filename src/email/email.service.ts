@@ -1,14 +1,14 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import nodemailer, { SendMailOptions, Transporter } from 'nodemailer';
 import { VerifyAccountMail } from './content/verify.content';
 import { User } from 'src/typeorm/entities/user/user.entity';
 import { ResetPasswordMail } from './content/reset.content';
-import { EmailConfig } from 'src/config/config.types';
+import * as SibApiV3Sdk from 'sib-api-v3-sdk';
+import { BrevoMailOptions } from './types/email-options.types';
 
 @Injectable()
 export class EmailService implements OnModuleInit {
-  private transporter: Transporter;
+  private apiInstance!: SibApiV3Sdk.TransactionalEmailsApi;
 
   constructor(
     private configService: ConfigService,
@@ -16,50 +16,50 @@ export class EmailService implements OnModuleInit {
     private resetPasswordMail: ResetPasswordMail,
   ) {}
 
-  async onModuleInit() {
-    this.transporter = await this.initializeTransporter();
+  async onModuleInit(): Promise<void> {
+    await this.initializeBrevoApi();
   }
 
-  private async initializeTransporter(): Promise<Transporter> {
-    const { smtpHost, smtpPort, smtpSecure, serverEmail, serverEmailPass } =
-      this.configService.get<EmailConfig>('email')!;
-
-    const transporter = nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      secure: smtpSecure,
-      auth: {
-        user: serverEmail,
-        pass: serverEmailPass,
-      },
-    });
-
-    await transporter.verify();
-    return transporter;
-  }
-
-  async sendMail(mailOptions: SendMailOptions): Promise<any> {
-    if (!this.transporter) {
-      throw new Error('Transporter not initialized');
+  async initializeBrevoApi(): Promise<void> {
+    try {
+      const defaultClient = SibApiV3Sdk.ApiClient.instance;
+      const apiKey = defaultClient.authentications['api-key'];
+      apiKey.apiKey = this.configService.get<string>('email.brevoApiKey')!;
+      this.apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+    } catch (error) {
+      throw new Error(`Failed to initialize Brevo API: ${error}`);
     }
-    return this.transporter.sendMail(mailOptions);
+  }
+
+  async sendMail(mailOptions: BrevoMailOptions): Promise<any> {
+    if (!this.apiInstance) {
+      throw new Error('Brevo API not initialized');
+    }
+    try {
+      return await this.apiInstance.sendTransacEmail(mailOptions);
+    } catch (error) {
+      throw new Error(`Failed to send email: ${error}`);
+    }
   }
 
   async sendVerifyTokenMail(
     user: User,
     verificationToken: string,
   ): Promise<any> {
-    const mailOptions = this.verifyAccountMail.createMail(
+    const mailOptions: BrevoMailOptions = this.verifyAccountMail.createMail(
       user,
       verificationToken,
     );
 
-    return this.sendMail(mailOptions);
+    return await this.sendMail(mailOptions);
   }
 
   async sendResetOtpMail(user: User, otp: number): Promise<any> {
-    const mailOptions = this.resetPasswordMail.createMail(user, otp);
+    const mailOptions: BrevoMailOptions = this.resetPasswordMail.createMail(
+      user,
+      otp,
+    );
 
-    return this.sendMail(mailOptions);
+    return await this.sendMail(mailOptions);
   }
 }

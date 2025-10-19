@@ -74,18 +74,24 @@ export class AuthService {
   }
 
   async verify(verificationToken: string) {
-    const { sub: userId } = await this.authUtilsService.verifyToken(
-      verificationToken,
-      JwtTypes.VER,
-    );
+    let userId: string;
+    try {
+      const { sub } = await this.authUtilsService.verifyToken(
+        verificationToken,
+        JwtTypes.VER,
+      );
+      userId = sub;
+    } catch {
+      return { success: false, message: 'invalid or expired token' };
+    }
 
     const user = await this.userService.findById(userId);
     if (user.isVerified) {
-      throw new BadRequestException('user already verified');
+      return { success: false, message: 'user already verified' };
     }
     await this.userService.confirmVerification(userId);
 
-    return { message: 'user has been verified successfully' };
+    return { success: true };
   }
 
   async login(loginDto: LocalLoginDto) {

@@ -1,34 +1,48 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SendMailOptions } from 'nodemailer';
 import { User } from 'src/typeorm/entities/user/user.entity';
+import { BrevoMailOptions } from '../types/email-options.types';
 
 @Injectable()
 export class VerifyAccountMail {
   constructor(private configService: ConfigService) {}
 
-  createMail(user: User, verificationToken: string): SendMailOptions {
-    const senderEmail = this.configService.get<string>('email.senderEmail');
-    const apiUrl = this.configService.get<string>('api.baseUrl');
-    const companyName = this.configService.get<string>('company.name');
+  createMail(user: User, verificationToken: string): BrevoMailOptions {
+    const senderEmail = this.configService.get<string>('email.senderEmail')!;
+    const supportEmail = this.configService.get<string>('email.supportEmail')!;
+    const companyName = this.configService.get<string>('company.name')!;
+    const apiUrl = this.configService.get<string>('api.baseUrl')!;
     const verifyUrl = `${apiUrl}/auth/verify/${verificationToken}`;
     const firstName = user.firstName || 'there';
 
-    const mailOptions: SendMailOptions = {
-      from: `"${companyName}" <${senderEmail}>`,
-      to: user.email,
+    return {
+      sender: {
+        email: senderEmail,
+        name: companyName,
+      },
+      to: [{ email: user.email, name: firstName }],
       subject: `Verify Your ${companyName} Account`,
-      text: this.generatePlainTextContent(firstName, verifyUrl),
-      html: this.generateHtmlContent(firstName, verifyUrl),
+      textContent: this.generatePlainTextContent(
+        supportEmail,
+        companyName,
+        firstName,
+        verifyUrl,
+      ),
+      htmlContent: this.generateHtmlContent(
+        supportEmail,
+        companyName,
+        firstName,
+        verifyUrl,
+      ),
     };
-
-    return mailOptions;
   }
 
-  private generatePlainTextContent(firstName: string, verifyUrl: string) {
-    const supportEmail = this.configService.get<string>('email.supportEmail');
-    const companyName = this.configService.get<string>('company.name');
-
+  private generatePlainTextContent(
+    supportEmail: string,
+    companyName: string,
+    firstName: string,
+    verifyUrl: string,
+  ) {
     return `
 Hi ${firstName},
 
@@ -47,10 +61,12 @@ The ${companyName} Team
 Need help? Contact us at ${supportEmail}`;
   }
 
-  private generateHtmlContent(firstName: string, verifyUrl: string) {
-    const supportEmail = this.configService.get<string>('email.supportEmail');
-    const companyName = this.configService.get<string>('company.name');
-
+  private generateHtmlContent(
+    supportEmail: string,
+    companyName: string,
+    firstName: string,
+    verifyUrl: string,
+  ) {
     return `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 30px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f9f9f9;">
   <h2 style="text-align: center; color: #333;">✅ Verify Your Account</h2>

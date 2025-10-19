@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Render,
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { AuthService } from './auth.service';
@@ -33,6 +34,7 @@ export class AuthController {
   }
 
   @Get('verify/:verificationToken')
+  @Render('verify-result')
   async verify(@Param('verificationToken') verificationToken: string) {
     const data = await this.authService.verify(verificationToken);
 
