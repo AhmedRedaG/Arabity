@@ -1,8 +1,25 @@
-import { IsNumberString, Length } from 'class-validator';
-import { LocalLoginDto } from './login.dto';
+import {
+  IsEmail,
+  IsJWT,
+  IsNumberString,
+  IsStrongPassword,
+  Length,
+} from 'class-validator';
 
-export class ResetPasswordDto extends LocalLoginDto {
+export class validateResetOtpDto {
+  @IsEmail()
+  email: string;
+
   @IsNumberString()
-  @Length(3, 10)
+  @Length(6, 6)
   otp: number;
+}
+
+export class ResetPasswordDto {
+  @IsJWT()
+  resetToken: string;
+
+  @IsStrongPassword()
+  @Length(8, 256)
+  password: string;
 }
