@@ -153,7 +153,7 @@ export class AuthService {
     };
   }
 
-  async reset(email: string, otpCode: number, password: string) {
+  async validateResetOtp(email: string, otpCode: number) {
     const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new NotFoundException('user not found');
@@ -174,12 +174,25 @@ export class AuthService {
     if (!otpRecord) {
       throw new UnauthorizedException('invalid or expired otp');
     }
+    await this.otpRepository.delete({ user });
 
-    await Promise.all([
-      this.userService.setPassword(user.id, password),
-      this.otpRepository.delete({ user }),
-    ]);
+    const resetToken = await this.authUtilsService.generateToken(
+      { sub: user.id },
+      JwtTypes.RESET,
+    );
 
-    return { message: 'password has been reset' };
+    return { resetToken };
+  }
+
+  async reset(resetToken: string, password: string) {
+    const { sub: userId } = await this.authUtilsService.verifyToken(
+      resetToken,
+      JwtTypes.RESET,
+    );
+    const user = await this.userService.findById(userId);
+
+    await this.userService.setPassword(user.id, password);
+
+    return { message: 'password has been reset successfully' };
   }
 }

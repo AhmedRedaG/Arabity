@@ -5,4 +5,5 @@ export interface JwtPayload {
 export enum JwtTypes {
   ACC = 'access',
   VER = 'verification',
+  RESET = 'reset',
 }

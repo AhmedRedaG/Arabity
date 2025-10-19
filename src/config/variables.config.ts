@@ -49,6 +49,10 @@ export default () => ({
       secret: process.env.VERIFICATION_TOKEN_SECRET,
       expiresIn: process.env.VERIFICATION_TOKEN_EXPIRES_IN || '15m',
     },
+    reset: {
+      secret: process.env.RESET_TOKEN_SECRET,
+      expiresIn: process.env.RESET_TOKEN_EXPIRES_IN || '5m',
+    },
   },
 
   email: {
