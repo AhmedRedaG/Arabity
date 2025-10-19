@@ -18,16 +18,21 @@ export default () => ({
   },
 
   otp: {
-    min: 10_000_000,
-    max: 99_999_999,
+    min: 100_000,
+    max: 999_999,
     expiresInMS: 1000 * 60 * 5, // 5 minutes
     maxAttempts: 10,
     coolDown: 1000 * 60 * 15, // 15m
     maxCoolDown: 1000 * 60 * 60 * 24, // 24h
   },
 
-  client: { baseUrl: 'http://localhost:8080' },
-  api: { baseUrl: 'https://arabity.vercel.app' },
+  client: { baseUrl: process.env.CLIENT_BASE_URL || 'http://localhost:3000' },
+  api: {
+    baseUrl:
+      process.env.NODE_ENV === 'production'
+        ? process.env.API_BASE_URL
+        : 'http://localhost:3000',
+  },
 
   company: { name: 'Arabity' },
 
@@ -47,11 +52,7 @@ export default () => ({
   },
 
   email: {
-    smtpHost: process.env.SMTP_HOST || 'smtp.gmail.com',
-    smtpPort: process.env.SMTP_PORT || 587,
-    smtpSecure: false,
-    serverEmail: process.env.SERVER_MAIL,
-    serverEmailPass: process.env.SERVER_MAIL_PASS,
+    brevoApiKey: process.env.BREVO_API_KEY,
     senderEmail: process.env.SENDER_MAIL || process.env.SERVER_MAIL,
     supportEmail: process.env.SUPPORT_MAIL || process.env.SERVER_MAIL,
   },
