@@ -4,15 +4,12 @@ import {
   Entity,
   JoinColumn,
   OneToOne,
-  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
+import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 
-@Entity()
-export class AuthAttempt {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+@Entity('auth_attempts')
+export class AuthAttempt extends MainFormat {
   @Column('smallint', { default: 0 })
   verificationAttempts: number;
 
@@ -25,7 +22,11 @@ export class AuthAttempt {
   @Column('smallint', { default: 0 })
   reset: number;
 
-  @OneToOne(() => User, (user) => user.authAttempt)
+  @OneToOne(() => User, (user) => user.authAttempt, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    cascade: true,
+  })
   @JoinColumn()
   user: User;
 }
