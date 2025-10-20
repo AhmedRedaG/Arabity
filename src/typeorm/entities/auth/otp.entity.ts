@@ -1,31 +1,23 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { User } from '../user/user.entity';
+import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 
-@Entity()
-export class Otp {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column('int')
+@Entity('otps')
+export class Otp extends MainFormat {
+  @Column()
   code: number;
 
   @Column('smallint', { default: 0 })
   attempts: number;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
   @Column('timestamp')
   expiresAt: Date;
 
-  @ManyToOne(() => User, (user) => user.otps)
+  @ManyToOne(() => User, (user) => user.otps, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    cascade: true,
+  })
   @Index()
   user: User;
 }
