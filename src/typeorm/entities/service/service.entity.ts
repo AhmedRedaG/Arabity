@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany, UpdateDateColumn } from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { Component } from './component.entity';
 import { Booking } from '../booking/booking.entity';
@@ -23,6 +23,9 @@ export class Service extends MainFormat {
 
   @Column()
   estimatedDurationMin: number;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @OneToMany(() => Component, (component) => component.service)
   components: Component[];
