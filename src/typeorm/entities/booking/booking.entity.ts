@@ -1,4 +1,11 @@
-import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  ManyToOne,
+  OneToMany,
+  UpdateDateColumn,
+} from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { User } from '../user/user.entity';
 import { Car } from '../car/car.entity';
@@ -29,10 +36,10 @@ export class Booking extends MainFormat {
   @Column('text')
   locationDetails: string;
 
-  @Column('decimal', { precision: 3, scale: 6, nullable: true })
+  @Column('decimal', { precision: 9, scale: 6, nullable: true })
   locationLat: number;
 
-  @Column('decimal', { precision: 3, scale: 6, nullable: true })
+  @Column('decimal', { precision: 9, scale: 6, nullable: true })
   locationLong: number;
 
   @Column({ length: 20, enum: BookingStatus, default: BookingStatus.PENDING })
@@ -40,6 +47,9 @@ export class Booking extends MainFormat {
 
   @Column('text', { nullable: true })
   notes: string;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @OneToMany(() => BookingDetail, (detail) => detail.booking)
   details: BookingDetail[];

@@ -5,6 +5,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  UpdateDateColumn,
 } from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { Service } from './service.entity';
@@ -31,6 +32,9 @@ export class Component extends MainFormat {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @OneToMany(() => BookingDetail, (bookingDetail) => bookingDetail.component)
   bookingDetails: BookingDetail[];

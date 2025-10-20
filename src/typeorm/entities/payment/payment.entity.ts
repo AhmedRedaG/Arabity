@@ -1,4 +1,4 @@
-import { Column, Entity, Index, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, UpdateDateColumn } from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { Booking } from '../booking/booking.entity';
 
@@ -33,6 +33,9 @@ export class Payment extends MainFormat {
 
   @Column('timestamp')
   paidAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @ManyToOne(() => Booking, (booking) => booking.payments, { cascade: true })
   @Index()
