@@ -26,7 +26,7 @@ export class User extends MainFormat {
   @Column({ length: 150, unique: true })
   email: string;
 
-  @Column('text', { nullable: true })
+  @Column('text', { nullable: true, select: false })
   password?: string;
 
   @Column({ default: false })
