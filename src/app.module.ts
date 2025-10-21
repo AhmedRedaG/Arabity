@@ -22,7 +22,6 @@ import variablesConfig from './config/variables.config';
     AuthModule,
     UserModule,
     EmailModule,
-
     AuthUtilsModule,
   ],
   controllers: [],
