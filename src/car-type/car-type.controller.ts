@@ -12,12 +12,16 @@ import { CarTypeService } from './car-type.service';
 import { CreateCarTypeDto } from './dto/create-car-type.dto';
 import { UpdateCarTypeDto } from './dto/update-car-type.dto';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
+import { RoleGuard } from 'src/auth/guard/role.guard';
+import { Role } from 'src/auth/decorator/role.decorator';
+import { UserRole } from 'src/typeorm/entities/user/user.entity';
 
 @Controller('car-types')
 export class CarTypeController {
   constructor(private readonly carTypeService: CarTypeService) {}
 
-  @UseGuards(AuthGuard)
+  @Role(UserRole.ADMIN)
+  @UseGuards(AuthGuard, RoleGuard)
   @Post()
   create(@Body() dto: CreateCarTypeDto) {
     return this.carTypeService.create(dto);
@@ -34,7 +38,8 @@ export class CarTypeController {
     return { carType };
   }
 
-  @UseGuards(AuthGuard)
+  @Role(UserRole.ADMIN)
+  @UseGuards(AuthGuard, RoleGuard)
   @Patch(':id')
   update(
     @Param('id', ParseUUIDPipe) id: string,
