@@ -31,7 +31,8 @@ export class AuthUtilsService {
     @InjectRepository(AuthAttempt)
     private authAttemptRepository: Repository<AuthAttempt>,
     @InjectRepository(Otp) private otpRepository: Repository<Otp>,
-    @Inject(forwardRef(() => UserService)) private userService: UserService,
+    @Inject(forwardRef(() => UserService))
+    private userService: UserService,
     private configService: ConfigService,
     private jwtService: JwtService,
   ) {}

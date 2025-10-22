@@ -55,7 +55,7 @@ export class AuthService {
     await this.authUtilsService.validateSendVerificationAttempts(user.id);
 
     const verificationToken = await this.authUtilsService.generateToken(
-      { sub: user.id },
+      { sub: user.id, role: user.role },
       JwtTypes.VER,
     );
 
@@ -115,6 +115,7 @@ export class AuthService {
 
     const accessToken = await this.authUtilsService.generateAuthTokens({
       sub: user.id,
+      role: user.role,
     });
 
     return { user, accessToken };
@@ -177,7 +178,7 @@ export class AuthService {
     await this.otpRepository.delete({ user });
 
     const resetToken = await this.authUtilsService.generateToken(
-      { sub: user.id },
+      { sub: user.id, role: user.role },
       JwtTypes.RESET,
     );
 

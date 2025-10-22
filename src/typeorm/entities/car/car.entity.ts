@@ -1,13 +1,5 @@
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-} from 'typeorm';
+import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 import { CarType } from './car-type.entity';
 import { User } from '../user/user.entity';
 import { Booking } from '../booking/booking.entity';
@@ -33,10 +25,10 @@ export class Car extends MainFormat {
   @Column({ length: 30, nullable: true })
   color: string;
 
-  @OneToOne(() => CarType, (carType) => carType.car, {
+  @ManyToOne(() => CarType, (carType) => carType.cars, {
     cascade: true,
   })
-  @JoinColumn()
+  @Index()
   type: CarType;
 
   @OneToMany(() => Booking, (booking) => booking.car)
