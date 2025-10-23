@@ -60,4 +60,10 @@ export default () => ({
     senderEmail: process.env.SENDER_MAIL || process.env.SERVER_MAIL,
     supportEmail: process.env.SUPPORT_MAIL || process.env.SERVER_MAIL,
   },
+
+  pagination: {
+    defaultPage: +process.env.DEFAULT_PAGE! || 1,
+    defaultLimit: +process.env.DEFAULT_LIMIT! || 10,
+    maxLimit: +process.env.MAX_LIMIT! || 100,
+  },
 });

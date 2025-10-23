@@ -8,6 +8,7 @@ import { AuthUtilsModule } from './auth-utils/auth-utils.module';
 import { CarTypeModule } from './car-type/car-type.module';
 import { CarModule } from './car/car.module';
 import { ServiceModule } from './service/service.module';
+import { HelperModule } from './helper/helper.module';
 import dbConfig from './config/db.config';
 import dbProductionConfig from './config/db.production.config';
 import variablesConfig from './config/variables.config';
@@ -29,6 +30,7 @@ import variablesConfig from './config/variables.config';
     CarTypeModule,
     CarModule,
     ServiceModule,
+    HelperModule,
   ],
   controllers: [],
   providers: [],
