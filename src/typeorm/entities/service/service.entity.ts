@@ -12,7 +12,7 @@ export class Service extends MainFormat {
   @Column('text')
   description: string;
 
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  @Column()
   basePrice: number;
 
   @Column('text', { nullable: true })
