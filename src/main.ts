@@ -10,7 +10,6 @@ import { join } from 'path';
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: true,
     }),
   );
 

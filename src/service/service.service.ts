@@ -4,11 +4,15 @@ import { UpdateServiceDto } from './dto/update-service.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Service } from 'src/typeorm/entities/service/service.entity';
 import { Repository } from 'typeorm';
+import { HelperService } from 'src/helper/helper.service';
+import { PaginationQueryDto } from 'src/helper/dto/pagination-query.dto';
+import { OptionsQueryDto } from 'src/helper/dto/options-query.dto';
 
 @Injectable()
 export class ServiceService {
   constructor(
     @InjectRepository(Service) private serviceRepository: Repository<Service>,
+    private helperService: HelperService,
   ) {}
 
   async create(dto: CreateServiceDto) {
@@ -16,11 +20,28 @@ export class ServiceService {
     return { service };
   }
 
-  async findAll(isActive?: boolean) {
-    const services = await this.serviceRepository.find({
-      where: { isActive },
+  async findAll(inPagination: PaginationQueryDto, inOptions: OptionsQueryDto) {
+    const { page, limit, offset } = this.helperService.getPaginationParams(
+      inPagination.page,
+      inPagination.limit,
+    );
+    const [services, total] = await this.serviceRepository.findAndCount({
+      where: { isActive: inOptions.isActive },
+      skip: offset,
+      take: limit,
+      order: {
+        [inOptions.orderBy]: inOptions.orderDirection,
+      },
     });
-    return { services };
+
+    const pagination = {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+    };
+
+    return { pagination, services };
   }
 
   async findOne(id: string) {

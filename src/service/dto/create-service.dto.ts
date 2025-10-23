@@ -1,12 +1,9 @@
 import {
   IsString,
-  IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsBoolean,
   IsInt,
   IsUrl,
-  IsPositive,
   Min,
   Length,
 } from 'class-validator';
@@ -17,13 +14,12 @@ export class CreateServiceDto {
   name: string;
 
   @IsString()
-  @IsNotEmpty()
+  @Length(1, 9999)
   description: string;
 
-  @IsNumber({ maxDecimalPlaces: 2 })
-  @IsPositive()
-  @IsOptional()
-  basePrice?: number;
+  @IsInt()
+  @Min(1)
+  basePrice: number;
 
   @IsUrl()
   @IsOptional()

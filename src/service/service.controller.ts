@@ -8,7 +8,6 @@ import {
   UseGuards,
   ParseUUIDPipe,
   Query,
-  ParseBoolPipe,
 } from '@nestjs/common';
 import { ServiceService } from './service.service';
 import { CreateServiceDto } from './dto/create-service.dto';
@@ -17,6 +16,8 @@ import { Role } from 'src/auth/decorator/role.decorator';
 import { UserRole } from 'src/typeorm/entities/user/user.entity';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { RoleGuard } from 'src/auth/guard/role.guard';
+import { PaginationQueryDto } from 'src/helper/dto/pagination-query.dto';
+import { OptionsQueryDto } from 'src/helper/dto/options-query.dto';
 
 @Controller('services')
 export class ServiceController {
@@ -31,10 +32,10 @@ export class ServiceController {
 
   @Get()
   findAll(
-    @Query('isActive', new ParseBoolPipe({ optional: true }))
-    isActive?: boolean,
+    @Query() pagination: PaginationQueryDto,
+    @Query() options: OptionsQueryDto,
   ) {
-    return this.serviceService.findAll(isActive);
+    return this.serviceService.findAll(pagination, options);
   }
 
   @Get(':id')
