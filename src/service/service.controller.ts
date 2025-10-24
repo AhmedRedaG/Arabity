@@ -18,10 +18,14 @@ import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { RoleGuard } from 'src/auth/guard/role.guard';
 import { PaginationQueryDto } from 'src/helper/dto/pagination-query.dto';
 import { OptionsQueryDto } from 'src/helper/dto/options-query.dto';
+import { ComponentService } from 'src/component/component.service';
 
 @Controller('services')
 export class ServiceController {
-  constructor(private readonly serviceService: ServiceService) {}
+  constructor(
+    private readonly serviceService: ServiceService,
+    private readonly componentService: ComponentService,
+  ) {}
 
   @Role(UserRole.ADMIN)
   @UseGuards(AuthGuard, RoleGuard)
@@ -42,6 +46,17 @@ export class ServiceController {
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     const service = await this.serviceService.findOne(id);
     return { service };
+  }
+
+  @Get(':id/components')
+  async findComponents(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query() pagination: PaginationQueryDto,
+    @Query() options: OptionsQueryDto,
+  ) {
+    return this.componentService.findAll(pagination, options, {
+      service: { id },
+    });
   }
 
   @Role(UserRole.ADMIN)
