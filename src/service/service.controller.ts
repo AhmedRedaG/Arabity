@@ -49,13 +49,41 @@ export class ServiceController {
   }
 
   @Get(':id/components')
-  async findComponents(
+  findComponents(
     @Param('id', ParseUUIDPipe) id: string,
     @Query() pagination: PaginationQueryDto,
     @Query() options: OptionsQueryDto,
   ) {
     return this.componentService.findAll(pagination, options, {
       service: { id },
+    });
+  }
+
+  @Get(':serviceId/car-types/:carTypeId/components')
+  findComponentsByCarType(
+    @Param('serviceId', ParseUUIDPipe) serviceId: string,
+    @Param('carTypeId', ParseUUIDPipe) carTypeId: string,
+    @Query() pagination: PaginationQueryDto,
+    @Query() options: OptionsQueryDto,
+  ) {
+    return this.componentService.findAll(pagination, options, {
+      service: { id: serviceId },
+      carTypes: { id: carTypeId },
+    });
+  }
+
+  @Get(':serviceId/car-types/:carTypeId/categories/:categorieId/components')
+  findComponentsByCarTypeAndCategorie(
+    @Param('serviceId', ParseUUIDPipe) serviceId: string,
+    @Param('carTypeId', ParseUUIDPipe) carTypeId: string,
+    @Param('categorieId', ParseUUIDPipe) categorieId: string,
+    @Query() pagination: PaginationQueryDto,
+    @Query() options: OptionsQueryDto,
+  ) {
+    return this.componentService.findAll(pagination, options, {
+      service: { id: serviceId },
+      carTypes: { id: carTypeId },
+      category: { id: categorieId },
     });
   }
 
