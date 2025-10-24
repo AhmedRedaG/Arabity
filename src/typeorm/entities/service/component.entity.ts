@@ -21,7 +21,7 @@ export class Component extends MainFormat {
   @Column('text', { nullable: true })
   description: string;
 
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  @Column()
   price: number;
 
   @Column()

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -47,7 +47,7 @@ export class ServiceService {
   async findOne(id: string) {
     const service = await this.serviceRepository.findOneBy({ id });
     if (!service) {
-      throw new Error('service not found');
+      throw new NotFoundException('service not found');
     }
     return service;
   }
