@@ -10,6 +10,7 @@ import { CarModule } from './car/car.module';
 import { ServiceModule } from './service/service.module';
 import { HelperModule } from './helper/helper.module';
 import { ComponentCategorieModule } from './component-categorie/component-categorie.module';
+import { ComponentModule } from './component/component.module';
 import dbConfig from './config/db.config';
 import dbProductionConfig from './config/db.production.config';
 import variablesConfig from './config/variables.config';
@@ -33,6 +34,7 @@ import variablesConfig from './config/variables.config';
     ServiceModule,
     HelperModule,
     ComponentCategorieModule,
+    ComponentModule,
   ],
   controllers: [],
   providers: [],

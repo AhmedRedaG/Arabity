@@ -44,7 +44,6 @@ export class ComponentCategorieService {
   async findOne(id: string) {
     const categorie = await this.componentCategoryRepository.findOne({
       where: { id },
-      relations: { components: true },
     });
     if (!categorie) {
       throw new NotFoundException('categorie not found');

@@ -8,5 +8,6 @@ import { ComponentCategory } from 'src/typeorm/entities/service/component-catego
   imports: [TypeOrmModule.forFeature([ComponentCategory])],
   controllers: [ComponentCategorieController],
   providers: [ComponentCategorieService],
+  exports: [ComponentCategorieService],
 })
 export class ComponentCategorieModule {}
