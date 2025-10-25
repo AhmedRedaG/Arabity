@@ -11,8 +11,9 @@ import { ServiceModule } from './service/service.module';
 import { HelperModule } from './helper/helper.module';
 import { ComponentCategorieModule } from './component-categorie/component-categorie.module';
 import { ComponentModule } from './component/component.module';
-import { AddressModule } from './address/address.module';
 import { AddressCityModule } from './address-city/address-city.module';
+import { AddressModule } from './address/address.module';
+import { BookingModule } from './booking/booking.module';
 import dbConfig from './config/db.config';
 import dbProductionConfig from './config/db.production.config';
 import variablesConfig from './config/variables.config';
@@ -37,8 +38,9 @@ import variablesConfig from './config/variables.config';
     HelperModule,
     ComponentCategorieModule,
     ComponentModule,
-    AddressModule,
     AddressCityModule,
+    AddressModule,
+    BookingModule,
   ],
   controllers: [],
   providers: [],

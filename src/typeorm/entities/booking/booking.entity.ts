@@ -25,23 +25,11 @@ export enum BookingStatus {
 
 @Entity('bookings')
 export class Booking extends MainFormat {
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  @Column({ default: 0 })
   totalPrice: number;
 
   @Column('timestamp')
-  bookingDate: Date;
-
-  @Column('timestamp')
   scheduledDate: Date;
-
-  @Column('text')
-  locationDetails: string;
-
-  @Column('decimal', { precision: 9, scale: 6, nullable: true })
-  locationLat: number;
-
-  @Column('decimal', { precision: 9, scale: 6, nullable: true })
-  locationLong: number;
 
   @Column({ length: 20, enum: BookingStatus, default: BookingStatus.PENDING })
   status: BookingStatus;
