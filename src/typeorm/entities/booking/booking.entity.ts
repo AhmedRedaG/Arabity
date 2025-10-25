@@ -13,6 +13,7 @@ import { Service } from '../service/service.entity';
 import { BookingDetail } from './booking-detail.entity';
 import { Payment } from '../payment/payment.entity';
 import { Review } from '../review/review.entity';
+import { Address } from '../address/address.entity';
 
 export enum BookingStatus {
   PENDING = 'pending',
@@ -24,23 +25,11 @@ export enum BookingStatus {
 
 @Entity('bookings')
 export class Booking extends MainFormat {
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  @Column({ default: 0 })
   totalPrice: number;
 
   @Column('timestamp')
-  bookingDate: Date;
-
-  @Column('timestamp')
   scheduledDate: Date;
-
-  @Column('text')
-  locationDetails: string;
-
-  @Column('decimal', { precision: 9, scale: 6, nullable: true })
-  locationLat: number;
-
-  @Column('decimal', { precision: 9, scale: 6, nullable: true })
-  locationLong: number;
 
   @Column({ length: 20, enum: BookingStatus, default: BookingStatus.PENDING })
   status: BookingStatus;
@@ -83,4 +72,12 @@ export class Booking extends MainFormat {
   })
   @Index()
   service: Service;
+
+  @ManyToOne(() => Address, (address) => address.bookings, {
+    onDelete: 'SET NULL',
+    onUpdate: 'SET NULL',
+    cascade: true,
+  })
+  @Index()
+  address: Address;
 }
