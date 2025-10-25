@@ -13,6 +13,7 @@ import { Service } from '../service/service.entity';
 import { BookingDetail } from './booking-detail.entity';
 import { Payment } from '../payment/payment.entity';
 import { Review } from '../review/review.entity';
+import { Address } from '../address/address.entity';
 
 export enum BookingStatus {
   PENDING = 'pending',
@@ -83,4 +84,12 @@ export class Booking extends MainFormat {
   })
   @Index()
   service: Service;
+
+  @ManyToOne(() => Address, (address) => address.bookings, {
+    onDelete: 'SET NULL',
+    onUpdate: 'SET NULL',
+    cascade: true,
+  })
+  @Index()
+  address: Address;
 }
