@@ -6,6 +6,7 @@ import { Booking } from '../booking/booking.entity';
 import { Review } from '../review/review.entity';
 import { Notification } from '../notification/notification.entity';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
+import { Address } from '../address/address.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -55,4 +56,7 @@ export class User extends MainFormat {
 
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications: Notification[];
+
+  @OneToMany(() => Address, (address) => address.user)
+  addresses: Address[];
 }
