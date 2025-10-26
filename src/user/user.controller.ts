@@ -14,15 +14,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from 'src/auth/decorator/user.decorator';
 
+@UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(AuthGuard)
   @Get('profile')
-  getProfile(@User('sub', ParseUUIDPipe) id: string) {
-    const data = this.userService.getProfile(id);
-    return data;
+  getProfile(@User('sub') id: string) {
+    return this.userService.findOne(id);
   }
 
   @Get(':id')
@@ -31,30 +30,18 @@ export class UserController {
     return { user };
   }
 
-  @UseGuards(AuthGuard)
   @Patch('profile')
-  updateProfile(
-    @User('sub', ParseUUIDPipe) id: string,
-    @Body() dto: UpdateUserDto,
-  ) {
-    const data = this.userService.update(id, dto);
-    return data;
+  updateProfile(@User('sub') id: string, @Body() dto: UpdateUserDto) {
+    return this.userService.update(id, dto);
   }
 
-  @UseGuards(AuthGuard)
   @Patch('password')
-  updatePassword(
-    @User('sub', ParseUUIDPipe) id: string,
-    @Body() dto: UpdatePasswordDto,
-  ) {
-    const data = this.userService.changePassword(id, dto);
-    return data;
+  updatePassword(@User('sub') id: string, @Body() dto: UpdatePasswordDto) {
+    return this.userService.changePassword(id, dto);
   }
 
-  @UseGuards(AuthGuard)
   @Delete('profile')
-  deleteProfile(@User('sub', ParseUUIDPipe) id: string) {
-    const data = this.userService.delete(id);
-    return data;
+  deleteProfile(@User('sub') id: string) {
+    return this.userService.remove(id);
   }
 }
