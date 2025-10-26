@@ -1,12 +1,12 @@
 import { Column, Entity, OneToMany, OneToOne, UpdateDateColumn } from 'typeorm';
-import { AuthAttempt } from '../auth/auth-attempt.entity';
-import { Otp } from '../auth/otp.entity';
-import { Car } from '../car/car.entity';
-import { Booking } from '../booking/booking.entity';
-import { Review } from '../review/review.entity';
-import { Notification } from '../notification/notification.entity';
+import { AuthAttempt } from '../../typeorm/entities/auth/auth-attempt.entity';
+import { Otp } from '../../typeorm/entities/auth/otp.entity';
+import { Car } from '../../typeorm/entities/car/car.entity';
+import { Booking } from '../../typeorm/entities/booking/booking.entity';
+import { Review } from '../../typeorm/entities/review/review.entity';
+import { Notification } from '../../typeorm/entities/notification/notification.entity';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
-import { Address } from '../address/address.entity';
+import { Address } from '../../typeorm/entities/address/address.entity';
 
 export enum UserRole {
   ADMIN = 'admin',

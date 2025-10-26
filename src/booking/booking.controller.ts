@@ -18,7 +18,7 @@ import { UpdateBookingDto } from './dto/update-booking.dto';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { User } from 'src/auth/decorator/user.decorator';
 import { Role } from 'src/auth/decorator/role.decorator';
-import { UserRole } from 'src/typeorm/entities/user/user.entity';
+import { UserRole } from 'src/user/entities/user.entity';
 import { RoleGuard } from 'src/auth/guard/role.guard';
 import { PaginationQueryDto } from 'src/helper/dto/pagination-query.dto';
 import { BookingOptionsQueryDto } from 'src/helper/dto/booking-options-query.dto';

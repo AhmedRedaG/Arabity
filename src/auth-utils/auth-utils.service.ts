@@ -8,7 +8,7 @@ import {
 import { UserService } from 'src/user/user.service';
 import bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { User } from 'src/typeorm/entities/user/user.entity';
+import { User } from 'src/user/entities/user.entity';
 import { LocalLoginDto } from 'src/auth/dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload, JwtTypes } from './types/jwt.types';

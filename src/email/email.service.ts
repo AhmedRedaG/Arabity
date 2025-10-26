@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { VerifyAccountMail } from './content/verify.content';
-import { User } from 'src/typeorm/entities/user/user.entity';
+import { User } from 'src/user/entities/user.entity';
 import { ResetPasswordMail } from './content/reset.content';
 import * as SibApiV3Sdk from 'sib-api-v3-sdk';
 import { BrevoMailOptions } from './types/email-options.types';

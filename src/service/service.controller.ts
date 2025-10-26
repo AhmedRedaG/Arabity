@@ -13,7 +13,7 @@ import { ServiceService } from './service.service';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
 import { Role } from 'src/auth/decorator/role.decorator';
-import { UserRole } from 'src/typeorm/entities/user/user.entity';
+import { UserRole } from 'src/user/entities/user.entity';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { RoleGuard } from 'src/auth/guard/role.guard';
 import { PaginationQueryDto } from 'src/helper/dto/pagination-query.dto';

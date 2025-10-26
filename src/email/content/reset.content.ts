@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { User } from 'src/typeorm/entities/user/user.entity';
+import { User } from 'src/user/entities/user.entity';
 import { BrevoMailOptions } from '../types/email-options.types';
 
 @Injectable()
