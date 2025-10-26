@@ -13,6 +13,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { AuthUtilsService } from 'src/auth-utils/auth-utils.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { PaginationQueryDto } from 'src/helper/dto/pagination-query.dto';
+import { OptionsQueryDto } from 'src/helper/dto/options-query.dto';
+import { HelperService } from 'src/helper/helper.service';
 
 @Injectable()
 export class UserService {
@@ -20,6 +23,7 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @Inject(forwardRef(() => AuthUtilsService))
     private authUtilsService: AuthUtilsService,
+    private helperService: HelperService,
   ) {}
 
   async findByEmail(email: string): Promise<User | null> {
@@ -54,6 +58,40 @@ export class UserService {
     if (!user) throw new NotFoundException('user not found');
 
     return { user };
+  }
+
+  async findAll(
+    inPagination: PaginationQueryDto,
+    inOptions: OptionsQueryDto,
+    inCondition?: any,
+  ) {
+    const { page, limit, offset } = this.helperService.getPaginationParams(
+      inPagination.page,
+      inPagination.limit,
+    );
+
+    const where = {};
+    if (inCondition) {
+      Object.assign(where, inCondition);
+    }
+
+    const [users, total] = await this.userRepository.findAndCount({
+      where,
+      skip: offset,
+      take: limit,
+      order: {
+        [inOptions.orderBy]: inOptions.orderDirection,
+      },
+    });
+
+    const pagination = {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+    };
+
+    return { pagination, users };
   }
 
   async create(dto: CreateUserDto): Promise<User> {
