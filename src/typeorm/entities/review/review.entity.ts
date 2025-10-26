@@ -1,6 +1,6 @@
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
-import { User } from '../../../user/entities/user.entity';
+import { User } from '../../../core/user/entities/user.entity';
 import { Booking } from '../booking/booking.entity';
 import { Service } from '../service/service.entity';
 
