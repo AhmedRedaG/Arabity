@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
-import { Service } from './service.entity';
 import { ComponentCategory } from './component-category.entity';
 import { BookingDetail } from '../booking/booking-detail.entity';
 import { CarType } from '../car/car-type.entity';
@@ -38,14 +37,6 @@ export class Component extends MainFormat {
 
   @OneToMany(() => BookingDetail, (bookingDetail) => bookingDetail.component)
   bookingDetails: BookingDetail[];
-
-  @ManyToOne(() => Service, (service) => service.components, {
-    onDelete: 'SET NULL',
-    onUpdate: 'SET NULL',
-    cascade: true,
-  })
-  @Index()
-  service: Service;
 
   @ManyToOne(() => ComponentCategory, (category) => category.components, {
     cascade: true,

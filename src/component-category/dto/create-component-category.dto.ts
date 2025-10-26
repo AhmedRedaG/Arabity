@@ -1,6 +1,6 @@
 import { IsString, Length } from 'class-validator';
 
-export class CreateComponentCategorieDto {
+export class CreateComponentCategoryDto {
   @IsString()
   @Length(1, 100)
   name: string;

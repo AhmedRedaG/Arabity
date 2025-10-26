@@ -7,16 +7,28 @@ import { Repository } from 'typeorm';
 import { HelperService } from 'src/helper/helper.service';
 import { PaginationQueryDto } from 'src/helper/dto/pagination-query.dto';
 import { OptionsQueryDto } from 'src/helper/dto/options-query.dto';
+import { ComponentCategoryService } from 'src/component-category/component-category.service';
+import { ComponentCategory } from 'src/typeorm/entities/service/component-category.entity';
 
 @Injectable()
 export class ServiceService {
   constructor(
     @InjectRepository(Service) private serviceRepository: Repository<Service>,
     private helperService: HelperService,
+    private componentCategoryService: ComponentCategoryService,
   ) {}
 
   async create(dto: CreateServiceDto) {
-    const service = await this.serviceRepository.save(dto);
+    let categories: ComponentCategory[] | undefined;
+    if (dto.categories) {
+      categories = await Promise.all(
+        dto.categories.map((id) => this.componentCategoryService.findOne(id)),
+      );
+    }
+    const service = await this.serviceRepository.save({
+      ...dto,
+      categories,
+    });
     return { service };
   }
 
@@ -54,7 +66,16 @@ export class ServiceService {
 
   async update(id: string, dto: UpdateServiceDto) {
     await this.findOne(id);
-    await this.serviceRepository.update(id, dto);
+    let categories: ComponentCategory[] | undefined;
+    if (dto.categories) {
+      categories = await Promise.all(
+        dto.categories.map((id) => this.componentCategoryService.findOne(id)),
+      );
+    }
+    await this.serviceRepository.update(id, {
+      ...dto,
+      categories,
+    });
     return { message: 'service updated successfully' };
   }
 }

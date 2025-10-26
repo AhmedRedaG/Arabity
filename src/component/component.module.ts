@@ -4,14 +4,14 @@ import { ComponentController } from './component.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Component } from 'src/typeorm/entities/service/component.entity';
 import { ServiceModule } from 'src/service/service.module';
-import { ComponentCategorieModule } from 'src/component-categorie/component-categorie.module';
+import { ComponentCategoryModule } from 'src/component-category/component-category.module';
 import { CarTypeModule } from 'src/car-type/car-type.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Component]),
     forwardRef(() => ServiceModule),
-    ComponentCategorieModule,
+    ComponentCategoryModule,
     CarTypeModule,
   ],
   controllers: [ComponentController],

@@ -9,7 +9,7 @@ import { CarTypeModule } from './car-type/car-type.module';
 import { CarModule } from './car/car.module';
 import { ServiceModule } from './service/service.module';
 import { HelperModule } from './helper/helper.module';
-import { ComponentCategorieModule } from './component-categorie/component-categorie.module';
+import { ComponentCategoryModule } from './component-category/component-category.module';
 import { ComponentModule } from './component/component.module';
 import { AddressCityModule } from './address-city/address-city.module';
 import { AddressModule } from './address/address.module';
@@ -36,7 +36,7 @@ import variablesConfig from './config/variables.config';
     CarModule,
     ServiceModule,
     HelperModule,
-    ComponentCategorieModule,
+    ComponentCategoryModule,
     ComponentModule,
     AddressCityModule,
     AddressModule,

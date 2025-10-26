@@ -55,7 +55,7 @@ export class ServiceController {
     @Query() options: OptionsQueryDto,
   ) {
     return this.componentService.findAll(pagination, options, {
-      service: { id },
+      // service: { id },
     });
   }
 
@@ -67,8 +67,8 @@ export class ServiceController {
     @Query() options: OptionsQueryDto,
   ) {
     return this.componentService.findAll(pagination, options, {
-      service: { id: serviceId },
-      carTypes: { id: carTypeId },
+      // service: { id: serviceId },
+      // carTypes: { id: carTypeId },
     });
   }
 

@@ -1,5 +1,6 @@
 import {
   ArrayMaxSize,
+  ArrayMinSize,
   IsArray,
   IsBoolean,
   IsInt,
@@ -13,12 +14,10 @@ import {
 
 export class CreateComponentDto {
   @IsUUID()
-  serviceId: string;
-
-  @IsUUID()
   categoryId: string;
 
   @IsArray()
+  @ArrayMinSize(1)
   @ArrayMaxSize(100)
   @IsUUID('4', { each: true })
   carTypes: string[];
