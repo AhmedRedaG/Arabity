@@ -3,9 +3,9 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from 'src/core/user/user.module';
-import { AuthAttempt } from 'src/typeorm/entities/auth/auth-attempt.entity';
+import { AuthAttempt } from 'src/core/auth/entities/auth-attempt.entity';
 import { EmailModule } from 'src/core/email/email.module';
-import { Otp } from 'src/typeorm/entities/auth/otp.entity';
+import { Otp } from 'src/core/auth/entities/otp.entity';
 
 @Module({
   imports: [

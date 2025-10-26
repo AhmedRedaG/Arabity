@@ -23,60 +23,46 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
-  async register(@Body() userDto: CreateUserDto) {
-    const data = this.authService.register(userDto);
-    return data;
+  register(@Body() userDto: CreateUserDto) {
+    return this.authService.register(userDto);
   }
 
   @Get('verify-mail/:email')
-  async sendVerification(@Param('email', ParseEmailPipe) email: string) {
-    const data = await this.authService.sendVerification(email);
-
-    return data;
+  sendVerification(@Param('email', ParseEmailPipe) email: string) {
+    return this.authService.sendVerification(email);
   }
 
   @Get('verify/:verificationToken')
   @Render('verify-result')
-  async verify(@Param('verificationToken') verificationToken: string) {
-    const data = await this.authService.verify(verificationToken);
-
-    return data;
+  verify(@Param('verificationToken') verificationToken: string) {
+    return this.authService.verify(verificationToken);
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDto: LocalLoginDto) {
-    const data = await this.authService.login(loginDto);
-    return data;
+  login(@Body() loginDto: LocalLoginDto) {
+    return this.authService.login(loginDto);
   }
 
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   logout() {
-    this.authService.logout();
-
-    return;
+    return this.authService.logout();
   }
 
   @Get('reset-mail/:email')
-  async sendResetPassword(@Param('email', ParseEmailPipe) email: string) {
-    const data = await this.authService.sendResetPassword(email);
-
-    return data;
+  sendResetPassword(@Param('email', ParseEmailPipe) email: string) {
+    return this.authService.sendResetPassword(email);
   }
 
   @Post('reset')
   @HttpCode(HttpStatus.OK)
-  async validateResetOtp(@Body() dto: validateResetOtpDto) {
-    const data = await this.authService.validateResetOtp(dto.email, +dto.otp);
-
-    return data;
+  validateResetOtp(@Body() dto: validateResetOtpDto) {
+    return this.authService.validateResetOtp(dto.email, +dto.otp);
   }
 
   @Patch('reset')
-  async resetPassword(@Body() dto: ResetPasswordDto) {
-    const data = await this.authService.reset(dto.resetToken, dto.password);
-
-    return data;
+  resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.reset(dto.resetToken, dto.password);
   }
 }

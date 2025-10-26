@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, OneToOne, UpdateDateColumn } from 'typeorm';
-import { AuthAttempt } from '../../../typeorm/entities/auth/auth-attempt.entity';
-import { Otp } from '../../../typeorm/entities/auth/otp.entity';
+import { AuthAttempt } from '../../auth/entities/auth-attempt.entity';
+import { Otp } from '../../auth/entities/otp.entity';
 import { Car } from '../../../typeorm/entities/car/car.entity';
 import { Booking } from '../../../typeorm/entities/booking/booking.entity';
 import { Review } from '../../../typeorm/entities/review/review.entity';
