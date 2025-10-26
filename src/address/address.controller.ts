@@ -31,12 +31,11 @@ export class AddressController {
   }
 
   @Get(':id')
-  async findOne(
+  findOne(
     @User('sub') userId: string,
     @Param('id', ParseUUIDPipe) addressId: string,
   ) {
-    const address = await this.addressService.findOne(userId, addressId);
-    return { address };
+    return this.addressService.findOne(userId, addressId);
   }
 
   @Patch(':id')

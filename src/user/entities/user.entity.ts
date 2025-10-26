@@ -6,7 +6,7 @@ import { Booking } from '../../typeorm/entities/booking/booking.entity';
 import { Review } from '../../typeorm/entities/review/review.entity';
 import { Notification } from '../../typeorm/entities/notification/notification.entity';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
-import { Address } from '../../typeorm/entities/address/address.entity';
+import { Address } from '../../address/entities/address.entity';
 
 export enum UserRole {
   ADMIN = 'admin',

@@ -23,7 +23,7 @@ export class AddressCityController {
   @Role(UserRole.ADMIN)
   @UseGuards(AuthGuard, RoleGuard)
   @Post()
-  createCity(@Body() dto: CreateAddressCityDto) {
+  create(@Body() dto: CreateAddressCityDto) {
     return this.addressCityService.create(dto);
   }
 
@@ -35,7 +35,7 @@ export class AddressCityController {
   @Role(UserRole.ADMIN)
   @UseGuards(AuthGuard, RoleGuard)
   @Patch(':id')
-  updateCity(
+  update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateAddressCityDto,
   ) {
