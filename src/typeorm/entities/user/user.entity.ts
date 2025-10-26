@@ -21,9 +21,6 @@ export class User extends MainFormat {
   @Column({ length: 100 })
   lastName: string;
 
-  @Column({ length: 20, nullable: true })
-  phone?: string;
-
   @Column({ length: 150, unique: true })
   email: string;
 

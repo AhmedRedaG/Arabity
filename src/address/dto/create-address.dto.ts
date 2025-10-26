@@ -2,6 +2,7 @@ import {
   IsLatitude,
   IsLongitude,
   IsOptional,
+  IsPhoneNumber,
   IsString,
   IsUUID,
   Length,
@@ -14,6 +15,9 @@ export class CreateAddressDto {
   @IsString()
   @Length(1, 9999)
   details: string;
+
+  @IsPhoneNumber()
+  phone: string;
 
   @IsLatitude()
   @IsOptional()
