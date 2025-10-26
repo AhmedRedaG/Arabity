@@ -46,10 +46,10 @@ export class UserService {
     return user;
   }
 
-  async getProfile(id: string) {
+  async findOne(id: string) {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: { cars: true, bookings: true, reviews: true },
+      relations: { cars: true, bookings: true, reviews: true, addresses: true },
     });
     if (!user) throw new NotFoundException('user not found');
 
@@ -69,17 +69,15 @@ export class UserService {
   }
 
   async update(id: string, dto: UpdateUserDto) {
-    const user = await this.findById(id);
-    Object.assign(user, dto);
+    await this.findById(id);
+    await this.userRepository.update(id, dto);
 
-    await this.userRepository.save(user);
-
-    return { user };
+    return { message: 'user updated successfully' };
   }
 
-  async delete(id: string) {
-    const user = await this.findById(id);
-    await this.userRepository.remove(user);
+  async remove(id: string) {
+    await this.findById(id);
+    await this.userRepository.delete(id);
 
     return { message: 'user deleted successfully' };
   }
