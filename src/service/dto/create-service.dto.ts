@@ -6,7 +6,13 @@ import {
   IsUrl,
   Min,
   Length,
+  IsArray,
+  ArrayMaxSize,
+  IsUUID,
+  IsEnum,
+  ArrayMinSize,
 } from 'class-validator';
+import { RequiredComponentCategoryStatus } from 'src/typeorm/entities/service/service.entity';
 
 export class CreateServiceDto {
   @IsString()
@@ -28,6 +34,17 @@ export class CreateServiceDto {
   @IsBoolean()
   @IsOptional()
   isActive?: boolean;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(100)
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  categories: string[];
+
+  @IsEnum(RequiredComponentCategoryStatus)
+  @IsOptional()
+  requiredComponentCategory: RequiredComponentCategoryStatus;
 
   @IsInt()
   @Min(1)

@@ -4,8 +4,7 @@ import { UpdateComponentDto } from './dto/update-component.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Component } from 'src/typeorm/entities/service/component.entity';
 import { Repository } from 'typeorm';
-import { ServiceService } from 'src/service/service.service';
-import { ComponentCategorieService } from 'src/component-categorie/component-categorie.service';
+import { ComponentCategoryService } from 'src/component-category/component-category.service';
 import { CarTypeService } from 'src/car-type/car-type.service';
 import { PaginationQueryDto } from 'src/helper/dto/pagination-query.dto';
 import { OptionsQueryDto } from 'src/helper/dto/options-query.dto';
@@ -16,15 +15,13 @@ export class ComponentService {
   constructor(
     @InjectRepository(Component)
     private componentRepository: Repository<Component>,
-    private serviceService: ServiceService,
-    private componentCategorieService: ComponentCategorieService,
+    private componentCategoryService: ComponentCategoryService,
     private carTypeService: CarTypeService,
     private helperService: HelperService,
   ) {}
 
   async create(dto: CreateComponentDto) {
-    const service = await this.serviceService.findOne(dto.serviceId);
-    const category = await this.componentCategorieService.findOne(
+    const category = await this.componentCategoryService.findOne(
       dto.categoryId,
     );
     const carTypes = await Promise.all(
@@ -32,7 +29,6 @@ export class ComponentService {
     );
     const component = await this.componentRepository.save({
       ...dto,
-      service,
       category,
       carTypes,
     });
@@ -77,7 +73,6 @@ export class ComponentService {
     const component = await this.componentRepository.findOne({
       where: { id },
       relations: {
-        service: true,
         category: true,
         carTypes: true,
       },
@@ -90,15 +85,11 @@ export class ComponentService {
 
   async update(id: string, dto: UpdateComponentDto) {
     const component = await this.findOne(id);
-    let service = component.service;
     let category = component.category;
     let carTypes = component.carTypes;
 
-    if (dto.serviceId) {
-      service = await this.serviceService.findOne(dto.serviceId);
-    }
     if (dto.categoryId) {
-      category = await this.componentCategorieService.findOne(dto.categoryId);
+      category = await this.componentCategoryService.findOne(dto.categoryId);
     }
     if (dto.carTypes) {
       carTypes = await Promise.all(
@@ -109,7 +100,6 @@ export class ComponentService {
     await this.componentRepository.save({
       id,
       ...dto,
-      service,
       category,
       carTypes,
     });

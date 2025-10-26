@@ -4,9 +4,14 @@ import { ServiceController } from './service.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Service } from 'src/typeorm/entities/service/service.entity';
 import { ComponentModule } from 'src/component/component.module';
+import { ComponentCategoryModule } from 'src/component-category/component-category.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Service]), ComponentModule],
+  imports: [
+    TypeOrmModule.forFeature([Service]),
+    ComponentModule,
+    ComponentCategoryModule,
+  ],
   controllers: [ServiceController],
   providers: [ServiceService],
   exports: [ServiceService],

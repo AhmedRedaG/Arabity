@@ -1,8 +1,20 @@
-import { Column, Entity, OneToMany, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  UpdateDateColumn,
+} from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
-import { Component } from './component.entity';
 import { Booking } from '../booking/booking.entity';
 import { Review } from '../review/review.entity';
+import { ComponentCategory } from './component-category.entity';
+
+export enum RequiredComponentCategoryStatus {
+  EQUAL = '==',
+  ONE_OR_MORE = '1+',
+}
 
 @Entity('services')
 export class Service extends MainFormat {
@@ -24,15 +36,22 @@ export class Service extends MainFormat {
   @Column()
   estimatedDurationMin: number;
 
+  @Column({
+    enum: RequiredComponentCategoryStatus,
+    default: RequiredComponentCategoryStatus.EQUAL,
+  })
+  requiredCategory: RequiredComponentCategoryStatus;
+
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @OneToMany(() => Component, (component) => component.service)
-  components: Component[];
 
   @OneToMany(() => Booking, (booking) => booking.service)
   bookings: Booking[];
 
   @OneToMany(() => Review, (review) => review.service)
   reviews: Review[];
+
+  @ManyToMany(() => ComponentCategory, (category) => category.components)
+  @JoinTable()
+  categories: ComponentCategory[];
 }
