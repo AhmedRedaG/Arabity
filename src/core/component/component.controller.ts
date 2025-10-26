@@ -38,9 +38,8 @@ export class ComponentController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const component = await this.componentService.findOne(id);
-    return { component };
+  findOne(@Param('id') id: string) {
+    return this.componentService.findOne(id);
   }
 
   @Role(UserRole.ADMIN)

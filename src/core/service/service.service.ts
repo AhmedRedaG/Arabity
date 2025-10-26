@@ -8,7 +8,7 @@ import { UtilsService } from 'src/core/utils/utils.service';
 import { PaginationQueryDto } from 'src/dto/pagination-query.dto';
 import { OptionsQueryDto } from 'src/dto/options-query.dto';
 import { ComponentCategoryService } from 'src/core/component-category/component-category.service';
-import { ComponentCategory } from 'src/typeorm/entities/service/component-category.entity';
+import { ComponentCategory } from 'src/core/component-category/entities/component-category.entity';
 
 @Injectable()
 export class ServiceService {

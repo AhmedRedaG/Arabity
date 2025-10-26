@@ -1,7 +1,7 @@
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { Car } from '../../car/entities/car.entity';
-import { Component } from '../../../typeorm/entities/service/component.entity';
+import { Component } from '../../component/entities/component.entity';
 
 @Entity('car_types')
 export class CarType extends MainFormat {

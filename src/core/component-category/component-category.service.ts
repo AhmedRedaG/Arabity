@@ -7,8 +7,9 @@ import {
 import { CreateComponentCategoryDto } from './dto/create-component-category.dto';
 import { UpdateComponentCategoryDto } from './dto/update-component-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ComponentCategory } from 'src/typeorm/entities/service/component-category.entity';
+import { ComponentCategory } from 'src/core/component-category/entities/component-category.entity';
 import { Repository } from 'typeorm';
+import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
 
 @Injectable()
 export class ComponentCategoryService {
@@ -17,22 +18,19 @@ export class ComponentCategoryService {
     private componentCategoryRepository: Repository<ComponentCategory>,
   ) {}
 
-  async saveOrConflict(
-    category: ComponentCategory | UpdateComponentCategoryDto,
+  async findConflictBy(
+    findOptions: TypeOrmFindOptionsWhere<ComponentCategory>,
   ) {
-    try {
-      return await this.componentCategoryRepository.save(category);
-    } catch (err) {
-      if (err.code === '23505') {
-        throw new ConflictException('category already exists');
-      } else {
-        throw err;
-      }
+    const isCategoryExist =
+      await this.componentCategoryRepository.findOneBy(findOptions);
+    if (isCategoryExist) {
+      throw new ConflictException('category already exists');
     }
   }
 
   async create(dto: CreateComponentCategoryDto) {
-    const category = await this.saveOrConflict(dto);
+    await this.findConflictBy({ name: dto.name });
+    const category = await this.componentCategoryRepository.save(dto);
     return { category };
   }
 
@@ -41,31 +39,36 @@ export class ComponentCategoryService {
     return { categories };
   }
 
-  async findOne(id: string) {
-    const category = await this.componentCategoryRepository.findOne({
-      where: { id },
-    });
+  async findOneBy(findOptions: TypeOrmFindOptionsWhere<ComponentCategory>) {
+    const category =
+      await this.componentCategoryRepository.findOneBy(findOptions);
     if (!category) {
       throw new NotFoundException('category not found');
     }
     return category;
   }
 
+  async findOne(id: string) {
+    const category = await this.findOneBy({ id });
+    return { category };
+  }
+
   async update(id: string, dto: UpdateComponentCategoryDto) {
-    const category = await this.findOne(id);
-    Object.assign(category, dto);
-    await this.saveOrConflict(category);
+    await this.findOneBy({ id });
+    await this.findConflictBy({ name: dto.name });
+    await this.componentCategoryRepository.update(id, dto);
     return { message: 'category updated successfully' };
   }
 
   async remove(id: string) {
-    await this.findOne(id);
+    await this.findOneBy({ id });
     try {
       await this.componentCategoryRepository.delete(id);
-    } catch (err) {
-      if (err.code === '23503') {
+    } catch (err: any) {
+      if (err instanceof Error && 'code' in err && err.code === '23503') {
         throw new BadRequestException('Cant removed category with components');
       }
+      throw err;
     }
     return { message: 'category removed successfully' };
   }
