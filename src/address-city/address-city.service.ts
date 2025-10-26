@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateAddressCityDto } from './dto/create-address-city.dto';
 import { UpdateAddressCityDto } from './dto/update-address-city.dto';
-import { AddressCity } from 'src/typeorm/entities/address/address-city.entity';
+import { AddressCity } from 'src/address-city/entities/address-city.entity';
 
 @Injectable()
 export class AddressCityService {
@@ -22,10 +22,8 @@ export class AddressCityService {
     return { cities };
   }
 
-  async findOne(cityId: string) {
-    const city = await this.addressCityRepository.findOne({
-      where: { id: cityId },
-    });
+  async findById(cityId: string) {
+    const city = await this.addressCityRepository.findOneBy({ id: cityId });
     if (!city) {
       throw new NotFoundException('city not found');
     }
@@ -33,10 +31,8 @@ export class AddressCityService {
   }
 
   async update(cityId: string, dto: UpdateAddressCityDto) {
-    const city = await this.findOne(cityId);
-    Object.assign(city, dto);
-
-    await this.addressCityRepository.save(city);
+    await this.findById(cityId);
+    await this.addressCityRepository.update(cityId, dto);
     return { message: 'city updated successfully' };
   }
 }

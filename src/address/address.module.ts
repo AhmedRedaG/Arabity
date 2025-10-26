@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AddressService } from './address.service';
 import { AddressController } from './address.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Address } from 'src/typeorm/entities/address/address.entity';
+import { Address } from 'src/address/entities/address.entity';
 import { AddressCityModule } from 'src/address-city/address-city.module';
 
 @Module({

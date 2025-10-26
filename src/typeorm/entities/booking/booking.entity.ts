@@ -13,7 +13,7 @@ import { Service } from '../service/service.entity';
 import { BookingDetail } from './booking-detail.entity';
 import { Payment } from '../payment/payment.entity';
 import { Review } from '../review/review.entity';
-import { Address } from '../address/address.entity';
+import { Address } from '../../../address/entities/address.entity';
 
 export enum BookingStatus {
   PENDING = 'pending',

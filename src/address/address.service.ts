@@ -2,9 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Address } from 'src/typeorm/entities/address/address.entity';
+import { Address } from 'src/address/entities/address.entity';
 import { Repository } from 'typeorm';
 import { AddressCityService } from 'src/address-city/address-city.service';
+import { AddressCity } from 'src/address-city/entities/address-city.entity';
 
 @Injectable()
 export class AddressService {
@@ -14,7 +15,7 @@ export class AddressService {
   ) {}
 
   async create(userId: string, dto: CreateAddressDto) {
-    const city = await this.addressCityService.findOne(dto.cityId);
+    const city = await this.addressCityService.findById(dto.cityId);
     const address = await this.addressRepository.save({
       ...dto,
       city,
@@ -40,19 +41,30 @@ export class AddressService {
     if (!address) {
       throw new NotFoundException('address not found');
     }
+    return { address };
+  }
+
+  async findById(addressId: string) {
+    const address = await this.addressRepository.findOneBy({ id: addressId });
+    if (!address) {
+      throw new NotFoundException('address not found');
+    }
     return address;
   }
 
   async update(userId: string, addressId: string, dto: UpdateAddressDto) {
-    const address = await this.findOne(userId, addressId);
-    let city = address.city;
+    await this.findOne(userId, addressId);
 
+    let city: AddressCity | undefined;
     if (dto.cityId) {
-      city = await this.addressCityService.findOne(dto.cityId);
+      city = await this.addressCityService.findById(dto.cityId);
+      delete dto.cityId;
     }
-    Object.assign(address, dto);
 
-    await this.addressRepository.save({ ...address, city });
+    await this.addressRepository.update(addressId, {
+      ...dto,
+      city,
+    });
 
     return { message: 'address updated successfully' };
   }

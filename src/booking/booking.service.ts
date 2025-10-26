@@ -34,7 +34,10 @@ export class BookingService {
     const user = await this.userService.findById(userId);
     const service = await this.serviceService.findOne(dto.serviceId);
     const car = await this.carService.findOne(userId, dto.carId);
-    const address = await this.addressService.findOne(userId, dto.addressId);
+    const { address } = await this.addressService.findOne(
+      userId,
+      dto.addressId,
+    );
 
     if (new Date(dto.scheduledDate) < new Date()) {
       throw new BadRequestException('invalid scheduled date');
@@ -141,7 +144,8 @@ export class BookingService {
 
     let address = booking.address;
     if (dto.addressId) {
-      address = await this.addressService.findOne(userId, dto.addressId);
+      address = (await this.addressService.findOne(userId, dto.addressId))
+        .address;
     }
 
     Object.assign(booking, dto);
