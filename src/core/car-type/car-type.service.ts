@@ -16,11 +16,15 @@ export class CarTypeService {
     @InjectRepository(CarType) private carTypeRepository: Repository<CarType>,
   ) {}
 
-  async create(dto: CreateCarTypeDto) {
-    const isCarTypeExist = await this.findOneBy({ maker: dto.maker });
+  async findConflictBy(findOptions: TypeOrmFindOptionsWhere<CarType>) {
+    const isCarTypeExist = await this.carTypeRepository.findOneBy(findOptions);
     if (isCarTypeExist) {
       throw new ConflictException('car type already exists');
     }
+  }
+
+  async create(dto: CreateCarTypeDto) {
+    await this.findConflictBy({ maker: dto.maker });
     const carType = await this.carTypeRepository.save(dto);
     return { carType };
   }
@@ -47,13 +51,8 @@ export class CarTypeService {
 
   async update(id: string, dto: UpdateCarTypeDto) {
     await this.findOneBy({ id });
-
-    const isCarTypeExist = await this.findOneBy({ maker: dto.maker });
-    if (isCarTypeExist) {
-      throw new ConflictException('car type already exists');
-    }
+    await this.findConflictBy({ maker: dto.maker });
     await this.carTypeRepository.update(id, dto);
-
     return { message: 'car type updated successfully' };
   }
 }

@@ -2,13 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateComponentDto } from './dto/create-component.dto';
 import { UpdateComponentDto } from './dto/update-component.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Component } from 'src/typeorm/entities/service/component.entity';
+import { Component } from 'src/core/component/entities/component.entity';
 import { Repository } from 'typeorm';
 import { ComponentCategoryService } from 'src/core/component-category/component-category.service';
 import { CarTypeService } from 'src/core/car-type/car-type.service';
 import { PaginationQueryDto } from 'src/dto/pagination-query.dto';
 import { OptionsQueryDto } from 'src/dto/options-query.dto';
 import { UtilsService } from 'src/core/utils/utils.service';
+import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
+import { ComponentCategory } from '../component-category/entities/component-category.entity';
+import { CarType } from '../car-type/entities/car-type.entity';
 
 @Injectable()
 export class ComponentService {
@@ -21,11 +24,11 @@ export class ComponentService {
   ) {}
 
   async create(dto: CreateComponentDto) {
-    const category = await this.componentCategoryService.findOne(
-      dto.categoryId,
-    );
+    const category = await this.componentCategoryService.findOneBy({
+      id: dto.categoryId,
+    });
     const carTypes = await Promise.all(
-      dto.carTypes.map((id) => this.carTypeService.findOne(id)),
+      dto.carTypes.map((id) => this.carTypeService.findOneBy({ id })),
     );
     const component = await this.componentRepository.save({
       ...dto,
@@ -69,6 +72,14 @@ export class ComponentService {
     return { pagination, components };
   }
 
+  async findOneBy(findOptions: TypeOrmFindOptionsWhere<Component>) {
+    const component = await this.componentRepository.findOneBy(findOptions);
+    if (!component) {
+      throw new NotFoundException('component not found');
+    }
+    return component;
+  }
+
   async findOne(id: string) {
     const component = await this.componentRepository.findOne({
       where: { id },
@@ -80,21 +91,25 @@ export class ComponentService {
     if (!component) {
       throw new NotFoundException('component not found');
     }
-    return component;
+    return { component };
   }
 
   async update(id: string, dto: UpdateComponentDto) {
-    const component = await this.findOne(id);
-    let category = component.category;
-    let carTypes = component.carTypes;
+    await this.findOneBy({ id });
 
+    let category: ComponentCategory | undefined;
+    let carTypes: CarType[] | undefined;
     if (dto.categoryId) {
-      category = await this.componentCategoryService.findOne(dto.categoryId);
+      category = await this.componentCategoryService.findOneBy({
+        id: dto.categoryId,
+      });
+      delete dto.categoryId;
     }
     if (dto.carTypes) {
       carTypes = await Promise.all(
-        dto.carTypes.map((id) => this.carTypeService.findOne(id)),
+        dto.carTypes.map((id) => this.carTypeService.findOneBy({ id })),
       );
+      delete dto.carTypes;
     }
 
     await this.componentRepository.save({

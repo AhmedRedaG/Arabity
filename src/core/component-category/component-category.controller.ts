@@ -36,9 +36,8 @@ export class ComponentCategoryController {
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const category = await this.componentCategoryService.findOne(id);
-    return { category };
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.componentCategoryService.findOne(id);
   }
 
   @Role(UserRole.ADMIN)

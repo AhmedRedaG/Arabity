@@ -1,7 +1,7 @@
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { Booking } from './booking.entity';
-import { Component } from '../service/component.entity';
+import { Component } from '../../../core/component/entities/component.entity';
 
 @Entity('booking_details')
 export class BookingDetail extends MainFormat {
