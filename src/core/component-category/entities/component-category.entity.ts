@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { Component } from '../../component/entities/component.entity';
-import { Service } from '../../../typeorm/entities/service/service.entity';
+import { Service } from '../../service/entities/service.entity';
 
 @Entity('component_categories')
 export class ComponentCategory extends MainFormat {

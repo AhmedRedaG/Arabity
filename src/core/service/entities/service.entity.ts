@@ -7,9 +7,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
-import { Booking } from '../booking/booking.entity';
-import { Review } from '../review/review.entity';
-import { ComponentCategory } from '../../../core/component-category/entities/component-category.entity';
+import { Booking } from '../../../typeorm/entities/booking/booking.entity';
+import { Review } from '../../../typeorm/entities/review/review.entity';
+import { ComponentCategory } from '../../component-category/entities/component-category.entity';
 
 export enum RequiredComponentCategoryStatus {
   EQUAL = '==',

@@ -41,7 +41,7 @@ export class ComponentService {
   async findAll(
     inPagination: PaginationQueryDto,
     inOptions: OptionsQueryDto,
-    inCondition?: any,
+    inCondition?: TypeOrmFindOptionsWhere<Component>,
   ) {
     const { page, limit, offset } = this.UtilsService.getPaginationParams(
       inPagination.page,
@@ -55,6 +55,9 @@ export class ComponentService {
 
     const [components, total] = await this.componentRepository.findAndCount({
       where,
+      relations: {
+        category: true,
+      },
       skip: offset,
       take: limit,
       order: {
