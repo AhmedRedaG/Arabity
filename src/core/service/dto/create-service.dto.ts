@@ -12,7 +12,7 @@ import {
   IsEnum,
   ArrayMinSize,
 } from 'class-validator';
-import { RequiredComponentCategoryStatus } from 'src/typeorm/entities/service/service.entity';
+import { RequiredComponentCategoryStatus } from 'src/core/service/entities/service.entity';
 
 export class CreateServiceDto {
   @IsString()

@@ -31,9 +31,9 @@ export class BookingService {
   ) {}
 
   async create(userId: string, dto: CreateBookingDto) {
-    const user = await this.userService.findById(userId);
-    const service = await this.serviceService.findOne(dto.serviceId);
-    const car = await this.carService.findOne(userId, dto.carId);
+    const user = await this.userService.findOneBy({ id: userId });
+    const service = await this.serviceService.findOneBy({ id: dto.serviceId });
+    const { car } = await this.carService.findOne(userId, dto.carId);
     const { address } = await this.addressService.findOne(
       userId,
       dto.addressId,

@@ -83,7 +83,7 @@ export class AuthService {
       return { success: false, message: 'invalid or expired token' };
     }
 
-    const user = await this.userService.findById(userId);
+    const user = await this.userService.findOneBy({ id: userId });
     if (user.isVerified) {
       return { success: false, message: 'user already verified' };
     }
@@ -188,7 +188,7 @@ export class AuthService {
       resetToken,
       JwtTypes.RESET,
     );
-    const user = await this.userService.findById(userId);
+    const user = await this.userService.findOneBy({ id: userId });
 
     await this.userService.setPassword(user.id, password);
 

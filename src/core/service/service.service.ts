@@ -2,13 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Service } from 'src/typeorm/entities/service/service.entity';
+import { Service } from 'src/core/service/entities/service.entity';
 import { Repository } from 'typeorm';
 import { UtilsService } from 'src/core/utils/utils.service';
 import { PaginationQueryDto } from 'src/dto/pagination-query.dto';
 import { OptionsQueryDto } from 'src/dto/options-query.dto';
 import { ComponentCategoryService } from 'src/core/component-category/component-category.service';
 import { ComponentCategory } from 'src/core/component-category/entities/component-category.entity';
+import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
 
 @Injectable()
 export class ServiceService {
@@ -22,7 +23,9 @@ export class ServiceService {
     let categories: ComponentCategory[] | undefined;
     if (dto.categories) {
       categories = await Promise.all(
-        dto.categories.map((id) => this.componentCategoryService.findOne(id)),
+        dto.categories.map((id) =>
+          this.componentCategoryService.findOneBy({ id }),
+        ),
       );
     }
     const service = await this.serviceRepository.save({
@@ -56,21 +59,38 @@ export class ServiceService {
     return { pagination, services };
   }
 
-  async findOne(id: string) {
-    const service = await this.serviceRepository.findOneBy({ id });
+  async findOneBy(findOptions: TypeOrmFindOptionsWhere<Service>) {
+    const service = await this.serviceRepository.findOneBy(findOptions);
     if (!service) {
       throw new NotFoundException('service not found');
     }
     return service;
   }
 
+  async findOne(id: string) {
+    const service = await this.serviceRepository.findOne({
+      where: { id },
+      relations: {
+        categories: true,
+        reviews: true,
+      },
+    });
+    if (!service) {
+      throw new NotFoundException('service not found');
+    }
+    return { service };
+  }
+
   async update(id: string, dto: UpdateServiceDto) {
-    await this.findOne(id);
+    await this.findOneBy({ id });
     let categories: ComponentCategory[] | undefined;
     if (dto.categories) {
       categories = await Promise.all(
-        dto.categories.map((id) => this.componentCategoryService.findOne(id)),
+        dto.categories.map((id) =>
+          this.componentCategoryService.findOneBy({ id }),
+        ),
       );
+      delete dto.categories;
     }
     await this.serviceRepository.update(id, {
       ...dto,
