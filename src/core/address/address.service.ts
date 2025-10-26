@@ -6,6 +6,7 @@ import { Address } from 'src/core/address/entities/address.entity';
 import { Repository } from 'typeorm';
 import { AddressCityService } from 'src/core/address-city/address-city.service';
 import { AddressCity } from 'src/core/address-city/entities/address-city.entity';
+import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
 
 @Injectable()
 export class AddressService {
@@ -15,7 +16,7 @@ export class AddressService {
   ) {}
 
   async create(userId: string, dto: CreateAddressDto) {
-    const city = await this.addressCityService.findById(dto.cityId);
+    const city = await this.addressCityService.findOneBy({ id: dto.cityId });
     const address = await this.addressRepository.save({
       ...dto,
       city,
@@ -44,8 +45,8 @@ export class AddressService {
     return { address };
   }
 
-  async findById(addressId: string) {
-    const address = await this.addressRepository.findOneBy({ id: addressId });
+  async findOneBy(findOptions: TypeOrmFindOptionsWhere<Address>) {
+    const address = await this.addressRepository.findOneBy(findOptions);
     if (!address) {
       throw new NotFoundException('address not found');
     }
@@ -53,11 +54,11 @@ export class AddressService {
   }
 
   async update(userId: string, addressId: string, dto: UpdateAddressDto) {
-    await this.findOne(userId, addressId);
+    await this.findOneBy({ id: addressId, user: { id: userId } });
 
     let city: AddressCity | undefined;
     if (dto.cityId) {
-      city = await this.addressCityService.findById(dto.cityId);
+      city = await this.addressCityService.findOneBy({ id: dto.cityId });
       delete dto.cityId;
     }
 
@@ -70,7 +71,7 @@ export class AddressService {
   }
 
   async remove(userId: string, addressId: string) {
-    await this.findOne(userId, addressId);
+    await this.findOneBy({ id: addressId, user: { id: userId } });
     await this.addressRepository.delete(addressId);
     return { message: 'address deleted successfully' };
   }

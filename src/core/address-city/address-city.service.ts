@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateAddressCityDto } from './dto/create-address-city.dto';
 import { UpdateAddressCityDto } from './dto/update-address-city.dto';
 import { AddressCity } from 'src/core/address-city/entities/address-city.entity';
+import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
 
 @Injectable()
 export class AddressCityService {
@@ -22,8 +23,8 @@ export class AddressCityService {
     return { cities };
   }
 
-  async findById(cityId: string) {
-    const city = await this.addressCityRepository.findOneBy({ id: cityId });
+  async findOneBy(findOptions: TypeOrmFindOptionsWhere<AddressCity>) {
+    const city = await this.addressCityRepository.findOneBy(findOptions);
     if (!city) {
       throw new NotFoundException('city not found');
     }
@@ -31,7 +32,7 @@ export class AddressCityService {
   }
 
   async update(cityId: string, dto: UpdateAddressCityDto) {
-    await this.findById(cityId);
+    await this.findOneBy({ id: cityId });
     await this.addressCityRepository.update(cityId, dto);
     return { message: 'city updated successfully' };
   }

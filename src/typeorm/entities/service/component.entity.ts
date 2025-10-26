@@ -10,7 +10,7 @@ import {
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { ComponentCategory } from './component-category.entity';
 import { BookingDetail } from '../booking/booking-detail.entity';
-import { CarType } from '../car/car-type.entity';
+import { CarType } from '../../../core/car-type/entities/car-type.entity';
 
 @Entity('components')
 export class Component extends MainFormat {

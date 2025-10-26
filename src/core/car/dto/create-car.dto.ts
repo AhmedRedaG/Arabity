@@ -6,7 +6,7 @@ import {
   MaxLength,
   IsEnum,
 } from 'class-validator';
-import { CarEngineType } from 'src/typeorm/entities/car/car.entity';
+import { CarEngineType } from 'src/core/car/entities/car.entity';
 
 export class CreateCarDto {
   @IsUUID()
