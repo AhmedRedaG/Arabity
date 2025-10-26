@@ -13,7 +13,7 @@ import { ComponentCategoryService } from './component-category.service';
 import { CreateComponentCategoryDto } from './dto/create-component-category.dto';
 import { UpdateComponentCategoryDto } from './dto/update-component-category.dto';
 import { Role } from 'src/auth/decorator/role.decorator';
-import { UserRole } from 'src/typeorm/entities/user/user.entity';
+import { UserRole } from 'src/user/entities/user.entity';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { RoleGuard } from 'src/auth/guard/role.guard';
 

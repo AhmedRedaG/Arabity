@@ -14,7 +14,7 @@ import { UpdateCarTypeDto } from './dto/update-car-type.dto';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { RoleGuard } from 'src/auth/guard/role.guard';
 import { Role } from 'src/auth/decorator/role.decorator';
-import { UserRole } from 'src/typeorm/entities/user/user.entity';
+import { UserRole } from 'src/user/entities/user.entity';
 
 @Controller('car-types')
 export class CarTypeController {

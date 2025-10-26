@@ -1,4 +1,4 @@
-import { UserRole } from 'src/typeorm/entities/user/user.entity';
+import { UserRole } from 'src/user/entities/user.entity';
 
 export interface JwtPayload {
   sub: string;
