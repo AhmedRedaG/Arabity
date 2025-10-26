@@ -16,6 +16,9 @@ export class Address extends MainFormat {
   @Column('text')
   details: string;
 
+  @Column({ length: 20 })
+  phone: string;
+
   @Column('decimal', { precision: 9, scale: 6, nullable: true })
   latitude: number;
 
