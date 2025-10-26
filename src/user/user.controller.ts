@@ -6,6 +6,7 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -13,21 +14,37 @@ import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from 'src/auth/decorator/user.decorator';
+import { Role } from 'src/auth/decorator/role.decorator';
+import { UserRole } from './entities/user.entity';
+import { RoleGuard } from 'src/auth/guard/role.guard';
+import { OptionsQueryDto } from 'src/helper/dto/options-query.dto';
+import { PaginationQueryDto } from 'src/helper/dto/pagination-query.dto';
 
 @UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Role(UserRole.ADMIN)
+  @UseGuards(RoleGuard)
+  @Get('all')
+  getAllUsers(
+    @Query() pagination: PaginationQueryDto,
+    @Query() options: OptionsQueryDto,
+  ) {
+    return this.userService.findAll(pagination, options);
+  }
+
   @Get('profile')
   getProfile(@User('sub') id: string) {
     return this.userService.findOne(id);
   }
 
+  @Role(UserRole.ADMIN)
+  @UseGuards(RoleGuard)
   @Get(':id')
-  async getUserById(@Param('id', ParseUUIDPipe) id: string) {
-    const user = await this.userService.findById(id);
-    return { user };
+  getUserById(@Param('id', ParseUUIDPipe) id: string) {
+    return this.userService.findOne(id);
   }
 
   @Patch('profile')
