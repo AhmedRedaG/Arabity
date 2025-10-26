@@ -11,9 +11,9 @@ import { LocalLoginDto } from './dto/login.dto';
 import { JwtTypes } from '../../types/jwt.types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
-import { AuthAttempt } from 'src/typeorm/entities/auth/auth-attempt.entity';
+import { AuthAttempt } from 'src/core/auth/entities/auth-attempt.entity';
 import { EmailService } from 'src/core/email/email.service';
-import { Otp } from 'src/typeorm/entities/auth/otp.entity';
+import { Otp } from 'src/core/auth/entities/otp.entity';
 import { AuthAttemptTypes } from '../../types/auth.types';
 import { AuthUtilsService } from 'src/core/auth-utils/auth-utils.service';
 
@@ -28,12 +28,10 @@ export class AuthService {
     private authUtilsService: AuthUtilsService,
   ) {}
 
-  async register(userDto: CreateUserDto) {
-    userDto.password = await this.authUtilsService.hashPassword(
-      userDto.password,
-    );
+  async register(dto: CreateUserDto) {
+    dto.password = await this.authUtilsService.hashPassword(dto.password);
 
-    const user = await this.userService.create(userDto);
+    const user = await this.userService.create(dto);
 
     const authAttempt = new AuthAttempt();
     authAttempt.user = user;

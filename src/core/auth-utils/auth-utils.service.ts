@@ -14,8 +14,8 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload, JwtTypes } from '../../types/jwt.types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AuthAttempt } from 'src/typeorm/entities/auth/auth-attempt.entity';
-import { Otp } from 'src/typeorm/entities/auth/otp.entity';
+import { AuthAttempt } from 'src/core/auth/entities/auth-attempt.entity';
+import { Otp } from 'src/core/auth/entities/otp.entity';
 import { randomInt } from 'crypto';
 import {
   AuthAttemptConfig,

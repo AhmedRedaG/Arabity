@@ -1,5 +1,5 @@
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
-import { User } from '../../../core/user/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 
 @Entity('otps')
