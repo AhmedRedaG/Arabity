@@ -15,8 +15,8 @@ import { UpdateCarDto } from './dto/update-car.dto';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { User } from 'src/decorator/user.decorator';
 
-@Controller('cars')
 @UseGuards(AuthGuard)
+@Controller('cars')
 export class CarController {
   constructor(private readonly carService: CarService) {}
 
@@ -31,12 +31,11 @@ export class CarController {
   }
 
   @Get(':id')
-  async findOne(
+  findOne(
     @User('sub') userId: string,
     @Param('id', ParseUUIDPipe) carId: string,
   ) {
-    const car = await this.carService.findOne(userId, carId);
-    return { car };
+    return this.carService.findOne(userId, carId);
   }
 
   @Patch(':id')

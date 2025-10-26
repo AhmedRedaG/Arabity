@@ -6,8 +6,9 @@ import {
 import { CreateCarTypeDto } from './dto/create-car-type.dto';
 import { UpdateCarTypeDto } from './dto/update-car-type.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CarType } from 'src/typeorm/entities/car/car-type.entity';
+import { CarType } from 'src/core/car-type/entities/car-type.entity';
 import { Repository } from 'typeorm';
+import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
 
 @Injectable()
 export class CarTypeService {
@@ -15,20 +16,12 @@ export class CarTypeService {
     @InjectRepository(CarType) private carTypeRepository: Repository<CarType>,
   ) {}
 
-  async saveOrConflict(carType: CarType | CreateCarTypeDto) {
-    try {
-      return await this.carTypeRepository.save(carType);
-    } catch (err) {
-      if (err.code === '23505') {
-        throw new ConflictException('car type already exists');
-      } else {
-        throw err;
-      }
-    }
-  }
-
   async create(dto: CreateCarTypeDto) {
-    const carType = await this.saveOrConflict(dto);
+    const isCarTypeExist = await this.findOneBy({ maker: dto.maker });
+    if (isCarTypeExist) {
+      throw new ConflictException('car type already exists');
+    }
+    const carType = await this.carTypeRepository.save(dto);
     return { carType };
   }
 
@@ -37,8 +30,15 @@ export class CarTypeService {
     return { carTypes };
   }
 
-  async findOne(id: string): Promise<CarType> {
-    const carType = await this.carTypeRepository.findOneBy({ id });
+  async findOne(id: string) {
+    const carType = await this.findOneBy({ id });
+    return { carType };
+  }
+
+  async findOneBy(
+    findOptions: TypeOrmFindOptionsWhere<CarType>,
+  ): Promise<CarType> {
+    const carType = await this.carTypeRepository.findOneBy(findOptions);
     if (!carType) {
       throw new NotFoundException('car type not found');
     }
@@ -46,9 +46,14 @@ export class CarTypeService {
   }
 
   async update(id: string, dto: UpdateCarTypeDto) {
-    const carType = await this.findOne(id);
-    Object.assign(carType, dto);
-    await this.saveOrConflict(carType);
-    return { carType };
+    await this.findOneBy({ id });
+
+    const isCarTypeExist = await this.findOneBy({ maker: dto.maker });
+    if (isCarTypeExist) {
+      throw new ConflictException('car type already exists');
+    }
+    await this.carTypeRepository.update(id, dto);
+
+    return { message: 'car type updated successfully' };
   }
 }

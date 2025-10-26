@@ -16,6 +16,7 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { PaginationQueryDto } from 'src/dto/pagination-query.dto';
 import { OptionsQueryDto } from 'src/dto/options-query.dto';
 import { UtilsService } from 'src/core/utils/utils.service';
+import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
 
 @Injectable()
 export class UserService {
@@ -34,8 +35,8 @@ export class UserService {
       .getOne();
   }
 
-  async findById(id: string): Promise<User> {
-    const user = await this.userRepository.findOneBy({ id });
+  async findOneBy(findOptions: TypeOrmFindOptionsWhere<User>): Promise<User> {
+    const user = await this.userRepository.findOneBy(findOptions);
     if (!user) throw new NotFoundException('user not found');
     return user;
   }
@@ -107,14 +108,14 @@ export class UserService {
   }
 
   async update(id: string, dto: UpdateUserDto) {
-    await this.findById(id);
+    await this.findOneBy({ id });
     await this.userRepository.update(id, dto);
 
     return { message: 'user updated successfully' };
   }
 
   async remove(id: string) {
-    await this.findById(id);
+    await this.findOneBy({ id });
     await this.userRepository.delete(id);
 
     return { message: 'user deleted successfully' };

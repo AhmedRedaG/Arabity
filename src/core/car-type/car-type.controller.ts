@@ -33,9 +33,8 @@ export class CarTypeController {
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const carType = await this.carTypeService.findOne(id);
-    return { carType };
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.carTypeService.findOne(id);
   }
 
   @Role(UserRole.ADMIN)
