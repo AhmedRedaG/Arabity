@@ -10,6 +10,7 @@ import { OptionsQueryDto } from 'src/dto/options-query.dto';
 import { ComponentCategoryService } from 'src/core/component-category/component-category.service';
 import { ComponentCategory } from 'src/core/component-category/entities/component-category.entity';
 import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
+import { UpdateRatingStatus } from 'src/types/rating.types';
 
 @Injectable()
 export class ServiceService {
@@ -97,5 +98,43 @@ export class ServiceService {
       categories,
     });
     return { message: 'service updated successfully' };
+  }
+
+  async updateRating(
+    service: Service,
+    rating: number,
+    status: UpdateRatingStatus,
+  ) {
+    let { ratesSum, ratesCount } = service;
+    let newAverageRating = 0;
+
+    switch (status) {
+      case UpdateRatingStatus.NEW:
+        ratesSum += rating;
+        ratesCount += 1;
+        break;
+
+      case UpdateRatingStatus.EDIT:
+        ratesSum = ratesSum + rating;
+        break;
+
+      case UpdateRatingStatus.DELETE:
+        ratesSum -= rating;
+        ratesCount -= 1;
+        break;
+    }
+
+    if (ratesCount > 0) {
+      newAverageRating = ratesSum / ratesCount;
+    } else {
+      ratesSum = 0;
+      newAverageRating = 0;
+    }
+
+    await this.serviceRepository.update(service.id, {
+      ratesSum: ratesSum,
+      ratesCount: ratesCount,
+      rating: parseFloat(newAverageRating.toFixed(2)),
+    });
   }
 }
