@@ -12,7 +12,7 @@ import {
   IsEnum,
   ArrayMinSize,
 } from 'class-validator';
-import { RequiredComponentCategoryStatus } from 'src/core/service/entities/service.entity';
+import { requiredCategoryStatus } from 'src/core/service/entities/service.entity';
 
 export class CreateServiceDto {
   @IsString()
@@ -42,9 +42,9 @@ export class CreateServiceDto {
   @IsOptional()
   categories: string[];
 
-  @IsEnum(RequiredComponentCategoryStatus)
+  @IsEnum(requiredCategoryStatus)
   @IsOptional()
-  requiredComponentCategory: RequiredComponentCategoryStatus;
+  requiredCategoryStatus: requiredCategoryStatus;
 
   @IsInt()
   @Min(1)

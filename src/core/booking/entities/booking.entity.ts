@@ -40,7 +40,9 @@ export class Booking extends MainFormat {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => BookingDetail, (detail) => detail.booking)
+  @OneToMany(() => BookingDetail, (detail) => detail.booking, {
+    cascade: true,
+  })
   details: BookingDetail[];
 
   @OneToMany(() => Payment, (payment) => payment.booking)

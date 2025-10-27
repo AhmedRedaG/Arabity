@@ -11,9 +11,9 @@ import { Booking } from '../../booking/entities/booking.entity';
 import { Review } from '../../../typeorm/entities/review/review.entity';
 import { ComponentCategory } from '../../component-category/entities/component-category.entity';
 
-export enum RequiredComponentCategoryStatus {
-  EQUAL = '==',
-  ONE_OR_MORE = '1+',
+export enum requiredCategoryStatus {
+  EQUAL = 'equal',
+  ONE_OR_MORE = 'oneOrMore',
 }
 
 @Entity('services')
@@ -37,10 +37,10 @@ export class Service extends MainFormat {
   estimatedDurationMin: number;
 
   @Column({
-    enum: RequiredComponentCategoryStatus,
-    default: RequiredComponentCategoryStatus.EQUAL,
+    enum: requiredCategoryStatus,
+    default: requiredCategoryStatus.EQUAL,
   })
-  requiredCategory: RequiredComponentCategoryStatus;
+  requiredCategoryStatus: requiredCategoryStatus;
 
   @UpdateDateColumn()
   updatedAt: Date;
@@ -51,7 +51,7 @@ export class Service extends MainFormat {
   @OneToMany(() => Review, (review) => review.service)
   reviews: Review[];
 
-  @ManyToMany(() => ComponentCategory, (category) => category.components)
+  @ManyToMany(() => ComponentCategory, (category) => category.services)
   @JoinTable()
   categories: ComponentCategory[];
 }
