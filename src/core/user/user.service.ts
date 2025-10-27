@@ -24,7 +24,7 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @Inject(forwardRef(() => AuthUtilsService))
     private authUtilsService: AuthUtilsService,
-    private UtilsService: UtilsService,
+    private utilsService: UtilsService,
   ) {}
 
   async findByEmail(email: string): Promise<User | null> {
@@ -66,7 +66,7 @@ export class UserService {
     inOptions: OptionsQueryDto,
     inCondition?: any,
   ) {
-    const { page, limit, offset } = this.UtilsService.getPaginationParams(
+    const { page, limit, offset } = this.utilsService.getPaginationParams(
       inPagination.page,
       inPagination.limit,
     );

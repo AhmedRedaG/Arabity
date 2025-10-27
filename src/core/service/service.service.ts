@@ -16,7 +16,7 @@ import { UpdateRatingStatus } from 'src/types/rating.types';
 export class ServiceService {
   constructor(
     @InjectRepository(Service) private serviceRepository: Repository<Service>,
-    private UtilsService: UtilsService,
+    private utilsService: UtilsService,
     private componentCategoryService: ComponentCategoryService,
   ) {}
 
@@ -37,7 +37,7 @@ export class ServiceService {
   }
 
   async findAll(inPagination: PaginationQueryDto, inOptions: OptionsQueryDto) {
-    const { page, limit, offset } = this.UtilsService.getPaginationParams(
+    const { page, limit, offset } = this.utilsService.getPaginationParams(
       inPagination.page,
       inPagination.limit,
     );

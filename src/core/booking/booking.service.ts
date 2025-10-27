@@ -35,7 +35,7 @@ export class BookingService {
     private addressService: AddressService,
     private componentService: ComponentService,
     private componentCategoryService: ComponentCategoryService,
-    private UtilsService: UtilsService,
+    private utilsService: UtilsService,
   ) {}
 
   isValidComponentsAndServiceCategories(
@@ -148,7 +148,7 @@ export class BookingService {
     inBookingOptions: BookingOptionsQueryDto,
     inCondition?: any,
   ) {
-    const { page, limit, offset } = this.UtilsService.getPaginationParams(
+    const { page, limit, offset } = this.utilsService.getPaginationParams(
       inPagination.page,
       inPagination.limit,
     );
