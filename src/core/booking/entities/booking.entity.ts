@@ -7,13 +7,13 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
-import { User } from '../../../core/user/entities/user.entity';
-import { Car } from '../../../core/car/entities/car.entity';
-import { Service } from '../../../core/service/entities/service.entity';
+import { User } from '../../user/entities/user.entity';
+import { Car } from '../../car/entities/car.entity';
+import { Service } from '../../service/entities/service.entity';
 import { BookingDetail } from './booking-detail.entity';
-import { Payment } from '../payment/payment.entity';
-import { Review } from '../review/review.entity';
-import { Address } from '../../../core/address/entities/address.entity';
+import { Payment } from '../../../typeorm/entities/payment/payment.entity';
+import { Review } from '../../../typeorm/entities/review/review.entity';
+import { Address } from '../../address/entities/address.entity';
 
 export enum BookingStatus {
   PENDING = 'pending',

@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
-import { Booking } from '../../../typeorm/entities/booking/booking.entity';
+import { Booking } from '../../booking/entities/booking.entity';
 import { Review } from '../../../typeorm/entities/review/review.entity';
 import { ComponentCategory } from '../../component-category/entities/component-category.entity';
 

@@ -97,6 +97,32 @@ export class ComponentService {
     return { component };
   }
 
+  async findOneByCarTypeWithCategory(id: string, carTypeId: string) {
+    const component = await this.componentRepository.findOne({
+      where: {
+        id,
+        isActive: true,
+        carTypes: {
+          id: carTypeId,
+        },
+      },
+      relations: { category: true },
+    });
+    if (!component) {
+      throw new NotFoundException('component not found');
+    }
+    return component;
+  }
+
+  async findForBookingByCarType(inComponentIds: string[], carTypeId: string) {
+    const components = await Promise.all(
+      inComponentIds.map((id) =>
+        this.findOneByCarTypeWithCategory(id, carTypeId),
+      ),
+    );
+    return components;
+  }
+
   async update(id: string, dto: UpdateComponentDto) {
     await this.findOneBy({ id });
 
