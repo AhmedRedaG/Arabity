@@ -31,11 +31,17 @@ export class Booking extends MainFormat {
   @Column('timestamp')
   scheduledDate: Date;
 
+  @Column('timestamp')
+  departureDate: Date;
+
+  @Column()
+  estimatedDurationMin: number;
+
   @Column({ length: 20, enum: BookingStatus, default: BookingStatus.PENDING })
   status: BookingStatus;
 
   @Column('text', { nullable: true })
-  notes: string;
+  notes?: string;
 
   @UpdateDateColumn()
   updatedAt: Date;
