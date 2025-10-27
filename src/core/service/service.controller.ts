@@ -19,12 +19,14 @@ import { RoleGuard } from 'src/guard/role.guard';
 import { PaginationQueryDto } from 'src/dto/pagination-query.dto';
 import { OptionsQueryDto } from 'src/dto/options-query.dto';
 import { ComponentService } from 'src/core/component/component.service';
+import { ReviewService } from '../reviews/review.service';
 
 @Controller('services')
 export class ServiceController {
   constructor(
     private readonly serviceService: ServiceService,
     private readonly componentService: ComponentService,
+    private readonly reviewService: ReviewService,
   ) {}
 
   @Role(UserRole.ADMIN)
@@ -55,6 +57,22 @@ export class ServiceController {
     @Body() dto: UpdateServiceDto,
   ) {
     return this.serviceService.update(id, dto);
+  }
+
+  @Get(':id/reviews')
+  findReviews(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query() pagination: PaginationQueryDto,
+    @Query() options: OptionsQueryDto,
+  ) {
+    return this.reviewService.findAll(
+      pagination,
+      options,
+      {
+        service: { id },
+      },
+      { user: true },
+    );
   }
 
   /////// find related components

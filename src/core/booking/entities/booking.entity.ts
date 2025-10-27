@@ -12,7 +12,7 @@ import { Car } from '../../car/entities/car.entity';
 import { Service } from '../../service/entities/service.entity';
 import { BookingDetail } from './booking-detail.entity';
 import { Payment } from '../../../typeorm/entities/payment/payment.entity';
-import { Review } from '../../../typeorm/entities/review/review.entity';
+import { Review } from '../../reviews/entities/review.entity';
 import { Address } from '../../address/entities/address.entity';
 
 export enum BookingStatus {
@@ -31,11 +31,17 @@ export class Booking extends MainFormat {
   @Column('timestamp')
   scheduledDate: Date;
 
+  @Column('timestamp')
+  departureDate: Date;
+
+  @Column()
+  estimatedDurationMin: number;
+
   @Column({ length: 20, enum: BookingStatus, default: BookingStatus.PENDING })
   status: BookingStatus;
 
   @Column('text', { nullable: true })
-  notes: string;
+  notes?: string;
 
   @UpdateDateColumn()
   updatedAt: Date;

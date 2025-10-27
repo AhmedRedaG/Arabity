@@ -35,7 +35,7 @@ export class BookingService {
     private addressService: AddressService,
     private componentService: ComponentService,
     private componentCategoryService: ComponentCategoryService,
-    private UtilsService: UtilsService,
+    private utilsService: UtilsService,
   ) {}
 
   isValidComponentsAndServiceCategories(
@@ -45,20 +45,17 @@ export class BookingService {
   ) {
     const compSet = new Set(componentsCategories);
     const servSet = new Set(serviceCategories);
-
     if (
       compSet.size !== servSet.size &&
       status === requiredCategoryStatus.EQUAL
     ) {
       return false;
     }
-
     for (const comp of compSet) {
       if (!servSet.has(comp)) {
         return false;
       }
     }
-
     return true;
   }
 
@@ -88,6 +85,7 @@ export class BookingService {
 
     const componentsDetails: BookingDetail[] = [];
     let componentsPrice = 0;
+    let componentsEstimatedDurationMin = 0;
 
     if (dto.components) {
       if (serviceCategoriesIds.length === 0) {
@@ -123,6 +121,7 @@ export class BookingService {
 
         componentsDetails.push(componentDetail);
         componentsPrice += component.price;
+        componentsEstimatedDurationMin += component.estimatedDurationMin;
       });
     } else {
       if (serviceCategoriesIds.length > 0) {
@@ -130,14 +129,22 @@ export class BookingService {
       }
     }
 
+    const totalPrice = service.basePrice + componentsPrice;
+    const estimatedDurationMin =
+      service.estimatedDurationMin + componentsEstimatedDurationMin;
+    const departureDate = new Date(dto.scheduledDate);
+    departureDate.setMinutes(departureDate.getMinutes() + estimatedDurationMin);
+
     const booking = await this.bookingRepository.save({
       ...dto,
       user,
       service,
       car,
       address,
+      totalPrice,
+      departureDate,
+      estimatedDurationMin,
       details: componentsDetails,
-      totalPrice: service.basePrice + componentsPrice,
     });
 
     return { booking };
@@ -148,7 +155,7 @@ export class BookingService {
     inBookingOptions: BookingOptionsQueryDto,
     inCondition?: any,
   ) {
-    const { page, limit, offset } = this.UtilsService.getPaginationParams(
+    const { page, limit, offset } = this.utilsService.getPaginationParams(
       inPagination.page,
       inPagination.limit,
     );

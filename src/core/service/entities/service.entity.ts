@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { Booking } from '../../booking/entities/booking.entity';
-import { Review } from '../../../typeorm/entities/review/review.entity';
+import { Review } from '../../reviews/entities/review.entity';
 import { ComponentCategory } from '../../component-category/entities/component-category.entity';
 
 export enum requiredCategoryStatus {
@@ -41,6 +41,15 @@ export class Service extends MainFormat {
     default: requiredCategoryStatus.EQUAL,
   })
   requiredCategoryStatus: requiredCategoryStatus;
+
+  @Column({ default: 0 })
+  ratesSum: number;
+
+  @Column({ default: 0 })
+  ratesCount: number;
+
+  @Column('decimal', { precision: 3, scale: 2, default: 0 })
+  rating: number;
 
   @UpdateDateColumn()
   updatedAt: Date;

@@ -20,7 +20,7 @@ export class ComponentService {
     private componentRepository: Repository<Component>,
     private componentCategoryService: ComponentCategoryService,
     private carTypeService: CarTypeService,
-    private UtilsService: UtilsService,
+    private utilsService: UtilsService,
   ) {}
 
   async create(dto: CreateComponentDto) {
@@ -43,7 +43,7 @@ export class ComponentService {
     inOptions: OptionsQueryDto,
     inCondition?: TypeOrmFindOptionsWhere<Component>,
   ) {
-    const { page, limit, offset } = this.UtilsService.getPaginationParams(
+    const { page, limit, offset } = this.utilsService.getPaginationParams(
       inPagination.page,
       inPagination.limit,
     );
