@@ -1,6 +1,6 @@
 import { Column, Entity, Index, ManyToOne, UpdateDateColumn } from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
-import { Booking } from '../booking/booking.entity';
+import { Booking } from '../../../core/booking/entities/booking.entity';
 
 export enum PaymentMethod {
   CASH = 'cash',
