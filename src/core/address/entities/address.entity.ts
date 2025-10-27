@@ -9,7 +9,7 @@ import {
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { User } from '../../user/entities/user.entity';
 import { AddressCity } from '../../address-city/entities/address-city.entity';
-import { Booking } from '../../../typeorm/entities/booking/booking.entity';
+import { Booking } from '../../booking/entities/booking.entity';
 
 @Entity('addresses')
 export class Address extends MainFormat {

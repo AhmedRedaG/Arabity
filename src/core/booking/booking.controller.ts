@@ -21,7 +21,7 @@ import { Role } from 'src/decorator/role.decorator';
 import { UserRole } from 'src/core/user/entities/user.entity';
 import { RoleGuard } from 'src/guard/role.guard';
 import { PaginationQueryDto } from 'src/dto/pagination-query.dto';
-import { BookingOptionsQueryDto } from 'src/dto/booking-options-query.dto';
+import { BookingOptionsQueryDto } from 'src/core/booking/dto/booking-options-query.dto';
 import { UpdateBookingStatusDto } from './dto/update-booking-status.dto';
 
 @Controller('bookings')
@@ -42,9 +42,8 @@ export class BookingController {
   @Role(UserRole.ADMIN)
   @UseGuards(RoleGuard)
   @Get('one/:id')
-  async findOne(@Param('id', ParseUUIDPipe) bookingId: string) {
-    const booking = await this.bookingService.findById(bookingId);
-    return { booking };
+  findOne(@Param('id', ParseUUIDPipe) bookingId: string) {
+    return this.bookingService.findOneByWithDetails({ id: bookingId });
   }
 
   @Role(UserRole.ADMIN)
@@ -75,12 +74,14 @@ export class BookingController {
   }
 
   @Get(':id')
-  async findOneForCurrentUser(
+  findOneForCurrentUser(
     @User('sub') userId: string,
     @Param('id', ParseUUIDPipe) bookingId: string,
   ) {
-    const booking = await this.bookingService.findOne(userId, bookingId);
-    return { booking };
+    return this.bookingService.findOneByWithDetails({
+      id: bookingId,
+      user: { id: userId },
+    });
   }
 
   @Patch(':id')

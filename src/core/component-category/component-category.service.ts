@@ -34,8 +34,10 @@ export class ComponentCategoryService {
     return { category };
   }
 
-  async findAll() {
-    const categories = await this.componentCategoryRepository.find();
+  async findAll(findOptions?: TypeOrmFindOptionsWhere<ComponentCategory>) {
+    const categories = await this.componentCategoryRepository.find({
+      where: findOptions,
+    });
     return { categories };
   }
 

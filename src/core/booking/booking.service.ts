@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   Booking,
   BookingStatus,
-} from 'src/typeorm/entities/booking/booking.entity';
+} from 'src/core/booking/entities/booking.entity';
 import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { UtilsService } from 'src/core/utils/utils.service';
 import { PaginationQueryDto } from 'src/dto/pagination-query.dto';
@@ -17,7 +17,13 @@ import { ServiceService } from 'src/core/service/service.service';
 import { UserService } from 'src/core/user/user.service';
 import { CarService } from 'src/core/car/car.service';
 import { AddressService } from 'src/core/address/address.service';
-import { BookingOptionsQueryDto } from 'src/dto/booking-options-query.dto';
+import { BookingOptionsQueryDto } from 'src/core/booking/dto/booking-options-query.dto';
+import { BookingDetail } from './entities/booking-detail.entity';
+import { RequiredComponentCategoryStatus } from '../service/entities/service.entity';
+import { ComponentService } from '../component/component.service';
+import { ComponentCategoryService } from '../component-category/component-category.service';
+import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
+import { Address } from '../address/entities/address.entity';
 
 @Injectable()
 export class BookingService {
@@ -27,20 +33,101 @@ export class BookingService {
     private serviceService: ServiceService,
     private carService: CarService,
     private addressService: AddressService,
+    private componentService: ComponentService,
+    private componentCategoryService: ComponentCategoryService,
     private UtilsService: UtilsService,
   ) {}
 
+  isValidComponentsAndServiceCategories(
+    componentsCategories: string[],
+    serviceCategories: string[],
+    status: RequiredComponentCategoryStatus,
+  ) {
+    const compSet = new Set(componentsCategories);
+    const servSet = new Set(serviceCategories);
+
+    if (
+      compSet.size !== servSet.size &&
+      status === RequiredComponentCategoryStatus.EQUAL
+    ) {
+      return false;
+    }
+
+    for (const comp of compSet) {
+      if (!servSet.has(comp)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   async create(userId: string, dto: CreateBookingDto) {
     const user = await this.userService.findOneBy({ id: userId });
-    const service = await this.serviceService.findOneBy({ id: dto.serviceId });
-    const { car } = await this.carService.findOne(userId, dto.carId);
+    const service = await this.serviceService.findOneBy({
+      id: dto.serviceId,
+      isActive: true,
+    });
+
+    if (new Date(dto.scheduledDate) < new Date()) {
+      throw new BadRequestException('invalid scheduled date');
+    }
+
     const { address } = await this.addressService.findOne(
       userId,
       dto.addressId,
     );
+    const { car } = await this.carService.findOne(userId, dto.carId);
 
-    if (new Date(dto.scheduledDate) < new Date()) {
-      throw new BadRequestException('invalid scheduled date');
+    const serviceCategories = await this.componentCategoryService.findAll({
+      services: { id: service.id },
+    });
+    const serviceCategoriesIds = serviceCategories.categories.map(
+      (category) => category.id,
+    );
+
+    let componentsDetails: BookingDetail[] | undefined;
+    let componentsPrice = 0;
+
+    if (dto.components) {
+      if (serviceCategoriesIds.length === 0) {
+        throw new BadRequestException('invalid components');
+      }
+
+      const validComponentsCarTypes =
+        await this.componentService.findForBookingByCarType(
+          dto.components,
+          car.type.id,
+        );
+      if (validComponentsCarTypes.length !== dto.components.length) {
+        throw new BadRequestException('invalid components car types');
+      }
+
+      const componentsCategoriesIds = validComponentsCarTypes.map(
+        (component) => component.category.id,
+      );
+
+      const isValidComponentServiceCategories =
+        this.isValidComponentsAndServiceCategories(
+          componentsCategoriesIds,
+          serviceCategoriesIds,
+          service.requiredCategory,
+        );
+      if (!isValidComponentServiceCategories) {
+        throw new BadRequestException('invalid components categories');
+      }
+
+      validComponentsCarTypes.forEach((component) => {
+        const componentDetail = new BookingDetail();
+        componentDetail.component = component;
+
+        componentsDetails!.push(componentDetail);
+        componentsPrice += component.price;
+      });
+    } else {
+      if (serviceCategoriesIds.length > 0) {
+        throw new BadRequestException('missing components');
+      }
     }
 
     const booking = await this.bookingRepository.save({
@@ -49,6 +136,8 @@ export class BookingService {
       service,
       car,
       address,
+      details: componentsDetails,
+      totalPrice: service.basePrice + componentsPrice,
     });
 
     return { booking };
@@ -86,6 +175,9 @@ export class BookingService {
 
     const [bookings, total] = await this.bookingRepository.findAndCount({
       where,
+      relations: {
+        service: true,
+      },
       skip: offset,
       take: limit,
       order: {
@@ -103,66 +195,71 @@ export class BookingService {
     return { pagination, bookings };
   }
 
-  async findById(bookingId: string) {
-    const booking = await this.bookingRepository.findOne({
-      where: { id: bookingId },
-      relations: {
-        user: true,
-        service: true,
-        car: true,
-        address: true,
-      },
-    });
+  async findOneBy(findOptions: TypeOrmFindOptionsWhere<Booking>) {
+    const booking = await this.bookingRepository.findOneBy(findOptions);
     if (!booking) {
       throw new NotFoundException('booking not found');
     }
     return booking;
   }
 
-  async findOne(userId: string, bookingId: string) {
+  async findOneByWithDetails(findOptions: TypeOrmFindOptionsWhere<Booking>) {
     const booking = await this.bookingRepository.findOne({
-      where: { id: bookingId, user: { id: userId } },
+      where: findOptions,
       relations: {
         user: true,
         service: true,
         car: true,
         address: true,
+        details: {
+          component: {
+            category: true,
+          },
+        },
       },
     });
     if (!booking) {
       throw new NotFoundException('booking not found');
     }
-    return booking;
+    return { booking };
   }
 
   async update(userId: string, bookingId: string, dto: UpdateBookingDto) {
-    const booking = await this.findOne(userId, bookingId);
-
     if (dto.scheduledDate && new Date(dto.scheduledDate) < new Date()) {
       throw new BadRequestException('invalid scheduled date');
     }
 
-    let address = booking.address;
+    await this.findOneBy({
+      id: bookingId,
+      user: { id: userId },
+    });
+
+    let address: Address | undefined;
     if (dto.addressId) {
       address = (await this.addressService.findOne(userId, dto.addressId))
         .address;
+      delete dto.addressId;
     }
 
-    Object.assign(booking, dto);
-    await this.bookingRepository.save({ ...booking, address });
+    await this.bookingRepository.update(bookingId, {
+      ...dto,
+      address,
+    });
+
     return { message: 'booking updated successfully' };
   }
 
   async updateStatus(bookingId: string, status: BookingStatus) {
-    await this.findById(bookingId);
+    await this.findOneBy({ id: bookingId });
     await this.bookingRepository.update(bookingId, { status });
     return { message: 'booking status updated successfully' };
   }
 
   async cancel(userId: string, bookingId: string) {
-    const booking = await this.findOne(userId, bookingId);
-    booking.status = BookingStatus.CANCELLED;
-    await this.bookingRepository.save(booking);
+    await this.findOneBy({ id: bookingId, user: { id: userId } });
+    await this.bookingRepository.update(bookingId, {
+      status: BookingStatus.CANCELLED,
+    });
     return { message: 'booking cancelled successfully' };
   }
 }

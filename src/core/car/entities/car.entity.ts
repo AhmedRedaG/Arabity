@@ -2,7 +2,7 @@ import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 import { CarType } from '../../car-type/entities/car-type.entity';
 import { User } from '../../user/entities/user.entity';
-import { Booking } from '../../../typeorm/entities/booking/booking.entity';
+import { Booking } from '../../booking/entities/booking.entity';
 
 export enum CarEngineType {
   PETROL = 'petrol',

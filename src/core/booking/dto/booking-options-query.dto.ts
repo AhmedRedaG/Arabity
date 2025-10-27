@@ -1,7 +1,7 @@
 import { IsEnum, IsOptional, IsUUID } from 'class-validator';
 import { Type } from 'class-transformer';
-import { BookingStatus } from 'src/typeorm/entities/booking/booking.entity';
-import { OptionsQueryDto } from './options-query.dto';
+import { BookingStatus } from 'src/core/booking/entities/booking.entity';
+import { OptionsQueryDto } from '../../../dto/options-query.dto';
 
 export class BookingOptionsQueryDto extends OptionsQueryDto {
   @IsOptional()
