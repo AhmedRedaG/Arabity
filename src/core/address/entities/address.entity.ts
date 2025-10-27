@@ -26,7 +26,7 @@ export class Address extends MainFormat {
   longitude: number;
 
   @Column('text', { nullable: true })
-  notes: string;
+  notes?: string;
 
   @UpdateDateColumn()
   updatedAt: Date;

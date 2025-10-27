@@ -19,7 +19,7 @@ import { CarService } from 'src/core/car/car.service';
 import { AddressService } from 'src/core/address/address.service';
 import { BookingOptionsQueryDto } from 'src/core/booking/dto/booking-options-query.dto';
 import { BookingDetail } from './entities/booking-detail.entity';
-import { RequiredComponentCategoryStatus } from '../service/entities/service.entity';
+import { requiredCategoryStatus } from '../service/entities/service.entity';
 import { ComponentService } from '../component/component.service';
 import { ComponentCategoryService } from '../component-category/component-category.service';
 import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
@@ -41,14 +41,14 @@ export class BookingService {
   isValidComponentsAndServiceCategories(
     componentsCategories: string[],
     serviceCategories: string[],
-    status: RequiredComponentCategoryStatus,
+    status: requiredCategoryStatus,
   ) {
     const compSet = new Set(componentsCategories);
     const servSet = new Set(serviceCategories);
 
     if (
       compSet.size !== servSet.size &&
-      status === RequiredComponentCategoryStatus.EQUAL
+      status === requiredCategoryStatus.EQUAL
     ) {
       return false;
     }
@@ -86,7 +86,7 @@ export class BookingService {
       (category) => category.id,
     );
 
-    let componentsDetails: BookingDetail[] | undefined;
+    const componentsDetails: BookingDetail[] = [];
     let componentsPrice = 0;
 
     if (dto.components) {
@@ -111,7 +111,7 @@ export class BookingService {
         this.isValidComponentsAndServiceCategories(
           componentsCategoriesIds,
           serviceCategoriesIds,
-          service.requiredCategory,
+          service.requiredCategoryStatus,
         );
       if (!isValidComponentServiceCategories) {
         throw new BadRequestException('invalid components categories');
@@ -121,7 +121,7 @@ export class BookingService {
         const componentDetail = new BookingDetail();
         componentDetail.component = component;
 
-        componentsDetails!.push(componentDetail);
+        componentsDetails.push(componentDetail);
         componentsPrice += component.price;
       });
     } else {

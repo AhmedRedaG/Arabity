@@ -5,9 +5,7 @@ import { Component } from '../../component/entities/component.entity';
 
 @Entity('booking_details')
 export class BookingDetail extends MainFormat {
-  @ManyToOne(() => Booking, (booking) => booking.details, {
-    cascade: true,
-  })
+  @ManyToOne(() => Booking, (booking) => booking.details)
   @Index()
   booking: Booking;
 
