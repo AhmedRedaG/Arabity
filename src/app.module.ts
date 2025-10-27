@@ -14,6 +14,7 @@ import { ComponentModule } from './core/component/component.module';
 import { AddressCityModule } from './core/address-city/address-city.module';
 import { AddressModule } from './core/address/address.module';
 import { BookingModule } from './core/booking/booking.module';
+import { ReviewModule } from './core/reviews/review.module';
 import dbConfig from './config/db.config';
 import dbProductionConfig from './config/db.production.config';
 import variablesConfig from './config/variables.config';
@@ -41,6 +42,7 @@ import variablesConfig from './config/variables.config';
     AddressCityModule,
     AddressModule,
     BookingModule,
+    ReviewModule,
   ],
   controllers: [],
   providers: [],
