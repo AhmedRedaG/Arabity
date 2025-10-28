@@ -20,6 +20,7 @@ import { PaginationQueryDto } from 'src/dto/pagination-query.dto';
 import { OptionsQueryDto } from 'src/dto/options-query.dto';
 import { ComponentService } from 'src/core/component/component.service';
 import { ReviewService } from '../reviews/review.service';
+import { ComponentCategoryService } from '../component-category/component-category.service';
 
 @Controller('services')
 export class ServiceController {
@@ -27,6 +28,7 @@ export class ServiceController {
     private readonly serviceService: ServiceService,
     private readonly componentService: ComponentService,
     private readonly reviewService: ReviewService,
+    private readonly componentCategoryService: ComponentCategoryService,
   ) {}
 
   @Role(UserRole.ADMIN)
@@ -73,6 +75,13 @@ export class ServiceController {
       },
       { user: true },
     );
+  }
+
+  @Get(':id/categories')
+  findCategories(@Param('id', ParseUUIDPipe) id: string) {
+    return this.componentCategoryService.findAll({
+      services: { id },
+    });
   }
 
   /////// find related components
