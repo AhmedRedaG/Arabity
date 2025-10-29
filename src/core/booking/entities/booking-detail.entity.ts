@@ -1,10 +1,13 @@
-import { Entity, Index, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { Booking } from './booking.entity';
 import { Component } from '../../component/entities/component.entity';
 
 @Entity('booking_details')
 export class BookingDetail extends MainFormat {
+  @Column({ default: 0 })
+  unitPriceWhenBooking: number;
+
   @ManyToOne(() => Booking, (booking) => booking.details)
   @Index()
   booking: Booking;

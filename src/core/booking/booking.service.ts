@@ -26,6 +26,7 @@ import { ComponentCategoryService } from '../component-category/component-catego
 import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
 import { Address } from '../address/entities/address.entity';
 import { ConfigService } from '@nestjs/config';
+import { RebookBookingDto } from './dto/rebook-booking.dto';
 
 @Injectable()
 export class BookingService {
@@ -139,6 +140,7 @@ export class BookingService {
       validComponents.forEach((component) => {
         const componentDetail = new BookingDetail();
         componentDetail.component = component;
+        componentDetail.unitPriceWhenBooking = component.price;
 
         componentsDetails.push(componentDetail);
         componentsPrice += component.price;
@@ -169,6 +171,24 @@ export class BookingService {
     });
 
     return { booking };
+  }
+
+  async rebook(userId: string, bookingId: string, dto: RebookBookingDto) {
+    const oldBooking = (
+      await this.findOneByWithDetails({
+        id: bookingId,
+        user: { id: userId },
+      })
+    ).booking;
+
+    const components = oldBooking.details.map((detail) => detail.component.id);
+    const newBookingDto: CreateBookingDto = {
+      ...dto,
+      components,
+      carId: oldBooking.car.id,
+      serviceId: oldBooking.service.id,
+    };
+    return this.create(userId, newBookingDto);
   }
 
   async findAll(
