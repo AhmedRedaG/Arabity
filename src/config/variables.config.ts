@@ -67,7 +67,7 @@ export default () => ({
     maxLimit: +process.env.MAX_LIMIT! || 100,
   },
 
-  Booking: {
+  booking: {
     pendingTimeMS: 1000 * 60 * 60, // 1 hour
   },
 });
