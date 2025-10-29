@@ -23,6 +23,7 @@ import { RoleGuard } from 'src/guard/role.guard';
 import { PaginationQueryDto } from 'src/dto/pagination-query.dto';
 import { BookingOptionsQueryDto } from 'src/core/booking/dto/booking-options-query.dto';
 import { UpdateBookingStatusDto } from './dto/update-booking-status.dto';
+import { RebookBookingDto } from './dto/rebook-booking.dto';
 
 @Controller('bookings')
 @UseGuards(AuthGuard)
@@ -60,6 +61,15 @@ export class BookingController {
   @Post()
   create(@User('sub') userId: string, @Body() dto: CreateBookingDto) {
     return this.bookingService.create(userId, dto);
+  }
+
+  @Post(':id/rebook')
+  rebook(
+    @User('sub') userId: string,
+    @Param('id', ParseUUIDPipe) bookingId: string,
+    @Body() dto: RebookBookingDto,
+  ) {
+    return this.bookingService.rebook(userId, bookingId, dto);
   }
 
   @Get()
