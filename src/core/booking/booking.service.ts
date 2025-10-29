@@ -140,6 +140,7 @@ export class BookingService {
       validComponents.forEach((component) => {
         const componentDetail = new BookingDetail();
         componentDetail.component = component;
+        componentDetail.unitPriceWhenBooking = component.price;
 
         componentsDetails.push(componentDetail);
         componentsPrice += component.price;
