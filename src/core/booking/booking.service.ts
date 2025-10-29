@@ -275,7 +275,6 @@ export class BookingService {
       ...dto,
       address,
     });
-    await this.bookingRepository.update(bookingId, { ...dto, address });
 
     return { message: 'booking updated successfully' };
   }
