@@ -96,16 +96,13 @@ export class BookingService {
         throw new BadRequestException('invalid components');
       }
 
-      const validComponentsCarTypes =
+      const validComponents =
         await this.componentService.findForBookingByCarType(
           dto.components,
           car.type.id,
         );
-      if (validComponentsCarTypes.length !== dto.components.length) {
-        throw new BadRequestException('invalid components car types');
-      }
 
-      const componentsCategoriesIds = validComponentsCarTypes.map(
+      const componentsCategoriesIds = validComponents.map(
         (component) => component.category.id,
       );
 
@@ -119,7 +116,7 @@ export class BookingService {
         throw new BadRequestException('invalid components categories');
       }
 
-      validComponentsCarTypes.forEach((component) => {
+      validComponents.forEach((component) => {
         const componentDetail = new BookingDetail();
         componentDetail.component = component;
 
