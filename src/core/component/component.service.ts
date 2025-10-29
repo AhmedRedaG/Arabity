@@ -109,7 +109,7 @@ export class ComponentService {
       relations: { category: true },
     });
     if (!component) {
-      throw new NotFoundException('component not found');
+      throw new NotFoundException('invalid component car type');
     }
     return component;
   }

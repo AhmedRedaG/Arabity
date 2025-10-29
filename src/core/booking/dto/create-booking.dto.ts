@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   ArrayMaxSize,
   ArrayMinSize,
@@ -8,6 +9,7 @@ import {
   IsUUID,
   Length,
 } from 'class-validator';
+import { AddressCase } from '../entities/booking.entity';
 
 export class CreateBookingDto {
   @IsUUID()
@@ -16,8 +18,12 @@ export class CreateBookingDto {
   @IsUUID()
   serviceId: string;
 
+  @Exclude()
+  addressCase: AddressCase;
+
   @IsUUID()
-  addressId: string;
+  @IsOptional()
+  addressId?: string;
 
   @IsDateString()
   scheduledDate: Date;
