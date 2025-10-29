@@ -13,7 +13,7 @@ import { ComponentCategory } from '../../component-category/entities/component-c
 
 export enum requiredCategoryStatus {
   EQUAL = 'equal',
-  ONE_OR_MORE = 'oneOrMore',
+  ONE_OR_MORE = 'one_or_more',
 }
 
 @Entity('services')

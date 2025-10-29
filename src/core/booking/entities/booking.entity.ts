@@ -23,6 +23,11 @@ export enum BookingStatus {
   CANCELLED = 'cancelled',
 }
 
+export enum AddressCase {
+  USER_ADDRESS = 'user_address',
+  CENTER = 'center',
+}
+
 @Entity('bookings')
 export class Booking extends MainFormat {
   @Column({ default: 0 })
@@ -39,6 +44,9 @@ export class Booking extends MainFormat {
 
   @Column({ length: 20, enum: BookingStatus, default: BookingStatus.PENDING })
   status: BookingStatus;
+
+  @Column({ enum: AddressCase, default: AddressCase.CENTER })
+  addressCase: AddressCase;
 
   @Column('text', { nullable: true })
   notes?: string;
@@ -85,7 +93,8 @@ export class Booking extends MainFormat {
     onDelete: 'SET NULL',
     onUpdate: 'SET NULL',
     cascade: true,
+    nullable: true,
   })
   @Index()
-  address: Address;
+  address?: Address | null;
 }

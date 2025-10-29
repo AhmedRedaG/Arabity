@@ -7,6 +7,7 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  AddressCase,
   Booking,
   BookingStatus,
 } from 'src/core/booking/entities/booking.entity';
@@ -70,10 +71,13 @@ export class BookingService {
       throw new BadRequestException('invalid scheduled date');
     }
 
-    const { address } = await this.addressService.findOne(
-      userId,
-      dto.addressId,
-    );
+    let address: Address | undefined;
+    if (dto.addressId) {
+      address = (await this.addressService.findOne(userId, dto.addressId))
+        .address;
+      dto.addressCase = AddressCase.USER_ADDRESS;
+    }
+
     const { car } = await this.carService.findOne(userId, dto.carId);
 
     const serviceCategories = await this.componentCategoryService.findAll({
@@ -241,17 +245,37 @@ export class BookingService {
       user: { id: userId },
     });
 
-    let address: Address | undefined;
-    if (dto.addressId) {
-      address = (await this.addressService.findOne(userId, dto.addressId))
-        .address;
-      delete dto.addressId;
+    let address: Address | null | undefined;
+    if (dto.addressCase) {
+      switch (dto.addressCase) {
+        case AddressCase.USER_ADDRESS:
+          if (!dto.addressId)
+            throw new BadRequestException(
+              'missing address id for user address case',
+            );
+          address = (await this.addressService.findOne(userId, dto.addressId))
+            .address;
+          dto.addressCase = AddressCase.USER_ADDRESS;
+          delete dto.addressId;
+          break;
+
+        case AddressCase.CENTER:
+          if (dto.addressId)
+            throw new BadRequestException(
+              'additional address id for center address case',
+            );
+          address = null;
+          break;
+      }
+    } else {
+      if (dto.addressId) throw new BadRequestException('missing address case');
     }
 
     await this.bookingRepository.update(bookingId, {
       ...dto,
       address,
     });
+    await this.bookingRepository.update(bookingId, { ...dto, address });
 
     return { message: 'booking updated successfully' };
   }
