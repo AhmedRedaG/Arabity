@@ -25,6 +25,7 @@ import { ComponentService } from '../component/component.service';
 import { ComponentCategoryService } from '../component-category/component-category.service';
 import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
 import { Address } from '../address/entities/address.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class BookingService {
@@ -37,6 +38,7 @@ export class BookingService {
     private componentService: ComponentService,
     private componentCategoryService: ComponentCategoryService,
     private utilsService: UtilsService,
+    private configService: ConfigService,
   ) {}
 
   isValidComponentsAndServiceCategories(
@@ -60,6 +62,15 @@ export class BookingService {
     return true;
   }
 
+  isAtLeastFromNow(dateString: Date, pendingTimeMs: number) {
+    const inputDate = new Date(dateString);
+    const now = new Date();
+
+    const diffMs = inputDate.getTime() - now.getTime();
+
+    return diffMs >= pendingTimeMs;
+  }
+
   async create(userId: string, dto: CreateBookingDto) {
     const user = await this.userService.findOneBy({ id: userId });
     const service = await this.serviceService.findOneBy({
@@ -67,8 +78,17 @@ export class BookingService {
       isActive: true,
     });
 
-    if (new Date(dto.scheduledDate) < new Date()) {
-      throw new BadRequestException('invalid scheduled date');
+    const pendingTimeMS = this.configService.get<number>(
+      'booking.pendingTimeMS',
+    )!;
+    const isAtLeastFromNow = this.isAtLeastFromNow(
+      dto.scheduledDate,
+      pendingTimeMS,
+    );
+    if (!isAtLeastFromNow) {
+      throw new BadRequestException(
+        `scheduled date must be at least ${pendingTimeMS / 60_000} minutes from now`,
+      );
     }
 
     let address: Address | undefined;
@@ -232,32 +252,27 @@ export class BookingService {
     return { booking };
   }
 
-  async update(userId: string, bookingId: string, dto: UpdateBookingDto) {
-    if (dto.scheduledDate && new Date(dto.scheduledDate) < new Date()) {
-      throw new BadRequestException('invalid scheduled date');
-    }
-
-    await this.findOneBy({
-      id: bookingId,
-      user: { id: userId },
-    });
-
+  async updateBookingAddress(
+    userId: string,
+    addressId: string | undefined,
+    addressCase: AddressCase | undefined,
+  ) {
     let address: Address | null | undefined;
-    if (dto.addressCase) {
-      switch (dto.addressCase) {
+
+    if (addressCase) {
+      switch (addressCase) {
         case AddressCase.USER_ADDRESS:
-          if (!dto.addressId)
+          if (!addressId)
             throw new BadRequestException(
               'missing address id for user address case',
             );
-          address = (await this.addressService.findOne(userId, dto.addressId))
+          address = (await this.addressService.findOne(userId, addressId))
             .address;
-          dto.addressCase = AddressCase.USER_ADDRESS;
-          delete dto.addressId;
+          addressCase = AddressCase.USER_ADDRESS;
           break;
 
         case AddressCase.CENTER:
-          if (dto.addressId)
+          if (addressId)
             throw new BadRequestException(
               'additional address id for center address case',
             );
@@ -265,11 +280,40 @@ export class BookingService {
           break;
       }
     } else {
-      if (dto.addressId) throw new BadRequestException('missing address case');
+      if (addressId) throw new BadRequestException('missing address case');
     }
+
+    return { address, addressCase };
+  }
+
+  async update(userId: string, bookingId: string, dto: UpdateBookingDto) {
+    if (dto.scheduledDate) {
+      const pendingTimeMS = this.configService.get<number>(
+        'booking.pendingTimeMS',
+      )!;
+      const isAtLeastFromNow = this.isAtLeastFromNow(
+        dto.scheduledDate,
+        pendingTimeMS,
+      );
+      if (!isAtLeastFromNow) {
+        throw new BadRequestException(
+          `scheduled date must be at least ${pendingTimeMS / 60_000} minutes from now`,
+        );
+      }
+    }
+
+    await this.findOneBy({ id: bookingId, user: { id: userId } });
+
+    const { address, addressCase } = await this.updateBookingAddress(
+      userId,
+      dto.addressId,
+      dto.addressCase,
+    );
+    if (dto.addressId) delete dto.addressId;
 
     await this.bookingRepository.update(bookingId, {
       ...dto,
+      addressCase,
       address,
     });
 
