@@ -7,6 +7,7 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  AddressCase,
   Booking,
   BookingStatus,
 } from 'src/core/booking/entities/booking.entity';
@@ -24,6 +25,7 @@ import { ComponentService } from '../component/component.service';
 import { ComponentCategoryService } from '../component-category/component-category.service';
 import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
 import { Address } from '../address/entities/address.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class BookingService {
@@ -36,6 +38,7 @@ export class BookingService {
     private componentService: ComponentService,
     private componentCategoryService: ComponentCategoryService,
     private utilsService: UtilsService,
+    private configService: ConfigService,
   ) {}
 
   isValidComponentsAndServiceCategories(
@@ -59,6 +62,15 @@ export class BookingService {
     return true;
   }
 
+  isAtLeastFromNow(dateString: Date, pendingTimeMs: number) {
+    const inputDate = new Date(dateString);
+    const now = new Date();
+
+    const diffMs = inputDate.getTime() - now.getTime();
+
+    return diffMs >= pendingTimeMs;
+  }
+
   async create(userId: string, dto: CreateBookingDto) {
     const user = await this.userService.findOneBy({ id: userId });
     const service = await this.serviceService.findOneBy({
@@ -66,14 +78,26 @@ export class BookingService {
       isActive: true,
     });
 
-    if (new Date(dto.scheduledDate) < new Date()) {
-      throw new BadRequestException('invalid scheduled date');
+    const pendingTimeMS = this.configService.get<number>(
+      'booking.pendingTimeMS',
+    )!;
+    const isAtLeastFromNow = this.isAtLeastFromNow(
+      dto.scheduledDate,
+      pendingTimeMS,
+    );
+    if (!isAtLeastFromNow) {
+      throw new BadRequestException(
+        `scheduled date must be at least ${pendingTimeMS / 60_000} minutes from now`,
+      );
     }
 
-    const { address } = await this.addressService.findOne(
-      userId,
-      dto.addressId,
-    );
+    let address: Address | undefined;
+    if (dto.addressId) {
+      address = (await this.addressService.findOne(userId, dto.addressId))
+        .address;
+      dto.addressCase = AddressCase.USER_ADDRESS;
+    }
+
     const { car } = await this.carService.findOne(userId, dto.carId);
 
     const serviceCategories = await this.componentCategoryService.findAll({
@@ -92,16 +116,13 @@ export class BookingService {
         throw new BadRequestException('invalid components');
       }
 
-      const validComponentsCarTypes =
+      const validComponents =
         await this.componentService.findForBookingByCarType(
           dto.components,
           car.type.id,
         );
-      if (validComponentsCarTypes.length !== dto.components.length) {
-        throw new BadRequestException('invalid components car types');
-      }
 
-      const componentsCategoriesIds = validComponentsCarTypes.map(
+      const componentsCategoriesIds = validComponents.map(
         (component) => component.category.id,
       );
 
@@ -115,7 +136,7 @@ export class BookingService {
         throw new BadRequestException('invalid components categories');
       }
 
-      validComponentsCarTypes.forEach((component) => {
+      validComponents.forEach((component) => {
         const componentDetail = new BookingDetail();
         componentDetail.component = component;
 
@@ -231,25 +252,68 @@ export class BookingService {
     return { booking };
   }
 
+  async updateBookingAddress(
+    userId: string,
+    addressId: string | undefined,
+    addressCase: AddressCase | undefined,
+  ) {
+    let address: Address | null | undefined;
+
+    if (addressCase) {
+      switch (addressCase) {
+        case AddressCase.USER_ADDRESS:
+          if (!addressId)
+            throw new BadRequestException(
+              'missing address id for user address case',
+            );
+          address = (await this.addressService.findOne(userId, addressId))
+            .address;
+          addressCase = AddressCase.USER_ADDRESS;
+          break;
+
+        case AddressCase.CENTER:
+          if (addressId)
+            throw new BadRequestException(
+              'additional address id for center address case',
+            );
+          address = null;
+          break;
+      }
+    } else {
+      if (addressId) throw new BadRequestException('missing address case');
+    }
+
+    return { address, addressCase };
+  }
+
   async update(userId: string, bookingId: string, dto: UpdateBookingDto) {
-    if (dto.scheduledDate && new Date(dto.scheduledDate) < new Date()) {
-      throw new BadRequestException('invalid scheduled date');
+    if (dto.scheduledDate) {
+      const pendingTimeMS = this.configService.get<number>(
+        'booking.pendingTimeMS',
+      )!;
+      const isAtLeastFromNow = this.isAtLeastFromNow(
+        dto.scheduledDate,
+        pendingTimeMS,
+      );
+      if (!isAtLeastFromNow) {
+        throw new BadRequestException(
+          `scheduled date must be at least ${pendingTimeMS / 60_000} minutes from now`,
+        );
+      }
     }
 
-    await this.findOneBy({
-      id: bookingId,
-      user: { id: userId },
-    });
+    await this.findOneBy({ id: bookingId, user: { id: userId } });
 
-    let address: Address | undefined;
-    if (dto.addressId) {
-      address = (await this.addressService.findOne(userId, dto.addressId))
-        .address;
-      delete dto.addressId;
-    }
+    const { address, addressCase } = await this.updateBookingAddress(
+      userId,
+      dto.addressId,
+      dto.addressCase,
+    );
+    if (dto.addressId) delete dto.addressId;
 
     await this.bookingRepository.update(bookingId, {
       ...dto,
+      addressCase,
       address,
     });
 
