@@ -30,3 +30,11 @@ export interface JwtConfig {
   secret: string;
   expiresIn: number;
 }
+
+export interface KashierPaymentConfig {
+  merchantId: string;
+  apiKey: string;
+  mode: string;
+  redirectUrl: string;
+  // webhookUrl: string;
+}

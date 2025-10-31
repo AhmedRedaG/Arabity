@@ -11,7 +11,7 @@ import { User } from '../../user/entities/user.entity';
 import { Car } from '../../car/entities/car.entity';
 import { Service } from '../../service/entities/service.entity';
 import { BookingDetail } from './booking-detail.entity';
-import { Payment } from '../../../typeorm/entities/payment/payment.entity';
+import { Payment } from '../../payment/entities/payment.entity';
 import { Review } from '../../reviews/entities/review.entity';
 import { Address } from '../../address/entities/address.entity';
 
@@ -32,6 +32,9 @@ export enum AddressCase {
 export class Booking extends MainFormat {
   @Column({ default: 0 })
   totalPrice: number;
+
+  @Column({ length: 20, default: 'EGP' })
+  currency: string;
 
   @Column('timestamp')
   scheduledDate: Date;
