@@ -26,7 +26,7 @@ export default () => ({
     maxCoolDown: 1000 * 60 * 60 * 24, // 24h
   },
 
-  client: { baseUrl: process.env.CLIENT_BASE_URL || 'http://localhost:3000' },
+  client: { baseUrl: process.env.CLIENT_BASE_URL || 'http://localhost:8000' },
   api: {
     baseUrl:
       process.env.NODE_ENV === 'production'
@@ -69,5 +69,11 @@ export default () => ({
 
   booking: {
     pendingTimeMS: 1000 * 60 * 60, // 1 hour
+  },
+
+  kashierPayment: {
+    merchantId: process.env.KASHIER_MERCHANT_ID,
+    apiKey: process.env.KASHIER_API_KEY,
+    mode: process.env.KASHIER_MODE || 'test',
   },
 });

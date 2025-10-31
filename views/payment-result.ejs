@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title><%= status === 'success' ? 'Payment Successful' : 'Payment Failed' %></title>
+  <style>
+    :root{
+      --green:#16a34a;
+      --red:#dc2626;
+      --muted:#6b7280;
+      --card-bg:#ffffff;
+      --page-bg:#f3f4f6;
+      --shadow: 0 6px 20px rgba(15,23,42,0.08);
+      --radius:14px;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: linear-gradient(180deg, #f8fafc 0%, var(--page-bg) 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+    }
+    .card{
+      width:100%;
+      max-width:780px;
+      background:var(--card-bg);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:34px;
+      display:flex;
+      gap:28px;
+      align-items:center;
+    }
+    .icon{
+      flex:0 0 120px;
+      height:120px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .icon.success{ background:rgba(22,163,74,0.08); }
+    .icon.fail{ background:rgba(220,38,38,0.06); }
+    .content{
+      flex:1;
+    }
+    h1{
+      margin:0 0 8px 0;
+      font-size:22px;
+      letter-spacing: -0.2px;
+    }
+    p.lead{
+      margin:0 0 18px 0;
+      color:var(--muted);
+    }
+    .meta{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+    .chip{
+      background:#f8fafc;
+      border-radius:10px;
+      padding:10px 12px;
+      font-size:13px;
+      color:#111827;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+    }
+    .actions{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .btn{
+      padding:10px 14px;
+      border-radius:10px;
+      border:0;
+      cursor:pointer;
+      font-weight:600;
+      font-size:14px;
+    }
+    .btn.primary{ background:var(--green); color:white; }
+    .btn.ghost{ background:transparent; color:#374151; border:1px solid #e6e9ef; }
+    .note{ font-size:13px; color:var(--muted); margin-top:12px; }
+    .small{ font-size:13px; color:#374151; }
+    @media (max-width:640px){
+      .card{ flex-direction:column; padding:22px; gap:18px; }
+      .icon{ width:88px; height:88px; border-radius:12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="status" aria-live="polite">
+    <div class="icon <%= status === 'success' ? 'success' : 'fail' %>">
+      <% if (status === 'success') { %>
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="12" fill="white" opacity="0.01"/>
+          <path d="M20 6L9 17l-5-5" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      <% } else { %>
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="12" fill="white" opacity="0.01"/>
+          <path d="M15 9l-6 6M9 9l6 6" stroke="var(--red)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      <% } %>
+    </div>
+
+    <div class="content">
+      <h1><%= status === 'success' ? 'Payment completed' : 'Payment failed' %></h1>
+      <p class="lead"><%= status === 'success' ? 'Your payment was processed successfully.' : 'We could not complete the payment. Please try again or contact support.' %></p>
+
+      <div class="meta">
+        <div class="chip">Status: <strong><%= status === 'success' ? 'Success' : 'Failed' %></strong></div>
+      </div>
+
+      <div class="actions">
+        <% if (status === 'success') { %>
+          <form action="/orders" method="get" style="display:inline">
+            <button class="btn primary" type="submit">Go to Orders</button>
+          </form>
+          <a class="btn ghost" href="/">Back to Home</a>
+        <% } else { %>
+          <form action="/pay/retry" method="post" style="display:inline">
+            <button class="btn primary" type="submit">Retry Payment</button>
+          </form>
+          <a class="btn ghost" href="/support">Contact Support</a>
+        <% } %>
+      </div>
+
+      <p class="note small">If something looks wrong, save a screenshot and contact our support.</p>
+    </div>
+  </div>
+</body>
+</html>
