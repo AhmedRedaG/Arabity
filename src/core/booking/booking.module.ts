@@ -22,5 +22,6 @@ import { ComponentCategoryModule } from '../component-category/component-categor
   ],
   controllers: [BookingController],
   providers: [BookingService],
+  exports: [BookingService],
 })
 export class BookingModule {}

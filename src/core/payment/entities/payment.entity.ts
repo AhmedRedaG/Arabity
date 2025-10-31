@@ -1,13 +1,10 @@
 import { Column, Entity, Index, ManyToOne, UpdateDateColumn } from 'typeorm';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
-import { Booking } from '../../../core/booking/entities/booking.entity';
+import { Booking } from '../../booking/entities/booking.entity';
 
 export enum PaymentMethod {
   CASH = 'cash',
-  CREDIT_CARD = 'credit_card',
-  WALLET = 'wallet',
-  PAYPAL = 'paypal',
-  STRIPE = 'stripe',
+  KASHIER = 'kashier',
 }
 
 export enum PaymentStatus {
@@ -19,8 +16,11 @@ export enum PaymentStatus {
 
 @Entity('payments')
 export class Payment extends MainFormat {
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  @Column()
   amount: number;
+
+  @Column({ length: 20, default: 'EGP' })
+  currency: string;
 
   @Column({ length: 20, enum: PaymentMethod })
   paymentMethod: PaymentMethod;
@@ -31,13 +31,15 @@ export class Payment extends MainFormat {
   @Column({ length: 255, unique: true })
   transactionId: string;
 
-  @Column('timestamp')
+  @Column('timestamp', { nullable: true })
   paidAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Booking, (booking) => booking.payments, { cascade: true })
+  @ManyToOne(() => Booking, (booking) => booking.payments)
   @Index()
   booking: Booking;
+  @Column()
+  bookingId: string;
 }
