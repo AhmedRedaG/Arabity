@@ -264,6 +264,7 @@ export class BookingService {
             category: true,
           },
         },
+        reviews: true,
       },
     });
     if (!booking) {
