@@ -22,7 +22,7 @@ import {
   JwtConfig,
   OtpConfig,
   VerificationConfig,
-} from 'src/config/config.types';
+} from 'src/types/config.types';
 import { AuthAttemptTypes } from '../../types/auth.types';
 
 @Injectable()
