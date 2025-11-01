@@ -48,6 +48,9 @@ export class Booking extends MainFormat {
   @Column({ length: 20, enum: BookingStatus, default: BookingStatus.PENDING })
   status: BookingStatus;
 
+  @Column({ default: false })
+  isReviewedBefore: boolean;
+
   @Column({ enum: AddressCase, default: AddressCase.CENTER })
   addressCase: AddressCase;
 
@@ -65,7 +68,7 @@ export class Booking extends MainFormat {
   @OneToMany(() => Payment, (payment) => payment.booking)
   payments: Payment[];
 
-  @OneToMany(() => Review, (review) => review.booking)
+  @OneToMany(() => Review, (review) => review.booking, { cascade: true })
   reviews: Review[];
 
   @ManyToOne(() => User, (user) => user.bookings, {

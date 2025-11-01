@@ -55,7 +55,7 @@ export class ReviewService {
       ...dto,
       service,
       user: { id: userId },
-      booking: { id: dto.bookingId },
+      booking: { id: dto.bookingId, isReviewed: true },
     });
 
     await this.serviceService.updateRating(
