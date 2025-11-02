@@ -50,20 +50,21 @@ export class PaymentService {
       user: { id: userId },
     });
 
-    let isPayed: boolean = false;
+    let isPaid: boolean = true;
     try {
       await this.findOneBy({
         bookingId,
         paymentStatus: PaymentStatus.PAID,
       });
     } catch {
-      isPayed = true;
+      isPaid = false;
     }
-    if (isPayed) {
+    if (isPaid) {
       throw new BadRequestException('booking already paid');
     }
 
-    const transactionId = bookingId + '.' + Date.now();
+    const transactionId =
+      'CSH-' + Date.now() + Math.random().toString().substring(2, 5);
     const paymentData: CreatePayment = {
       bookingId,
       transactionId,
@@ -73,6 +74,7 @@ export class PaymentService {
       paymentStatus: PaymentStatus.PENDING,
     };
     await this.create(paymentData);
+
     return { message: 'payment created successfully' };
   }
 

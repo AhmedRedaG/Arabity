@@ -20,7 +20,7 @@ export class Review extends MainFormat {
   @Index()
   user: User;
 
-  @ManyToOne(() => Booking, (booking) => booking.reviews, { cascade: true })
+  @ManyToOne(() => Booking, (booking) => booking.reviews)
   @Index()
   booking: Booking;
 
