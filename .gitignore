@@ -3,6 +3,9 @@
 /node_modules
 /build
 
+# firebase
+src/config/firebase/**
+
 # Logs
 logs
 *.log
