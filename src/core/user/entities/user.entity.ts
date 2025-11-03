@@ -4,7 +4,7 @@ import { Otp } from '../../auth/entities/otp.entity';
 import { Car } from '../../car/entities/car.entity';
 import { Booking } from '../../booking/entities/booking.entity';
 import { Review } from '../../reviews/entities/review.entity';
-import { Notification } from '../../../typeorm/entities/notification/notification.entity';
+import { Notification } from '../../notification/entities/notification.entity';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { Address } from '../../address/entities/address.entity';
 

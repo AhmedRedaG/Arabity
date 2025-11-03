@@ -17,6 +17,7 @@ import { BookingModule } from './core/booking/booking.module';
 import { ReviewModule } from './core/reviews/review.module';
 import { PaymentModule } from './core/payment/payment.module';
 import { KashierPaymentModule } from './core/kashier-payment/kashier-payment.module';
+import { NotificationModule } from './core/notification/notification.module';
 import dbConfig from './config/db.config';
 import dbProductionConfig from './config/db.production.config';
 import variablesConfig from './config/variables.config';
@@ -47,6 +48,7 @@ import variablesConfig from './config/variables.config';
     ReviewModule,
     PaymentModule,
     KashierPaymentModule,
+    NotificationModule,
   ],
   controllers: [],
   providers: [],
