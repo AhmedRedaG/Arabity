@@ -6,6 +6,7 @@ import {
   Message,
   MulticastMessage,
 } from 'firebase-admin/messaging';
+import { Target } from 'src/types/firebase.types';
 
 @Injectable()
 export class FirebaseNotificationService {
@@ -31,21 +32,17 @@ export class FirebaseNotificationService {
     this.messaging = getMessaging(app);
   }
 
-  async sendToDevice(
-    deviceToken: string,
+  private createMessage(
+    target: Target,
     title: string,
     body: string,
     data?: Record<string, string>,
-  ) {
-    const message: Message = {
-      token: deviceToken,
-      notification: {
-        title,
-        body,
-      },
+  ): Message | MulticastMessage {
+    const baseMessage = {
+      notification: { title, body },
       data: data || {},
       android: {
-        priority: 'high',
+        priority: 'high' as const,
         notification: {
           sound: 'default',
           channelId: 'default',
@@ -60,6 +57,28 @@ export class FirebaseNotificationService {
         },
       },
     };
+
+    if ('token' in target) {
+      return { ...baseMessage, token: target.token };
+    } else if ('tokens' in target) {
+      return { ...baseMessage, tokens: target.tokens };
+    } else {
+      return { ...baseMessage, topic: target.topic };
+    }
+  }
+
+  async sendToDevice(
+    deviceToken: string,
+    title: string,
+    body: string,
+    data?: Record<string, string>,
+  ) {
+    const message = this.createMessage(
+      { token: deviceToken },
+      title,
+      body,
+      data,
+    );
 
     const response = await this.messaging.send(message);
     return { success: true, messageId: response };
@@ -71,29 +90,12 @@ export class FirebaseNotificationService {
     body: string,
     data?: Record<string, string>,
   ) {
-    const message: MulticastMessage = {
-      tokens: deviceTokens,
-      notification: {
-        title,
-        body,
-      },
-      data: data || {},
-      android: {
-        priority: 'high',
-        notification: {
-          sound: 'default',
-          channelId: 'default',
-        },
-      },
-      apns: {
-        payload: {
-          aps: {
-            sound: 'default',
-            badge: 1,
-          },
-        },
-      },
-    };
+    const message = this.createMessage(
+      { tokens: deviceTokens },
+      title,
+      body,
+      data,
+    );
 
     const response = await this.messaging.sendEachForMulticast(message);
 
@@ -110,17 +112,7 @@ export class FirebaseNotificationService {
     body: string,
     data?: Record<string, string>,
   ) {
-    const message: Message = {
-      topic,
-      notification: {
-        title,
-        body,
-      },
-      data: data || {},
-      android: {
-        priority: 'high',
-      },
-    };
+    const message = this.createMessage({ topic }, title, body, data);
 
     const response = await this.messaging.send(message);
     return { success: true, messageId: response };
