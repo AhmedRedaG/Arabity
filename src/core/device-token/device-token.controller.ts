@@ -28,8 +28,9 @@ export class DeviceTokenController {
   @Role(UserRole.ADMIN)
   @UseGuards(RoleGuard)
   @Get('user-tokens/:userId')
-  getUserTokens(@Param('userId', ParseUUIDPipe) userId: string) {
-    return this.deviceTokenService.getUserTokens(userId);
+  async getUserTokens(@Param('userId', ParseUUIDPipe) userId: string) {
+    const tokens = await this.deviceTokenService.getUserTokens(userId);
+    return { tokens };
   }
 
   @Role(UserRole.ADMIN)

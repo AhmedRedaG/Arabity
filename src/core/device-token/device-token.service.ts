@@ -55,9 +55,9 @@ export class DeviceTokenService {
 
   async getUserTokens(userId: string) {
     const tokens = await this.deviceTokenRepository.find({
-      where: { userId },
+      where: { userId, isActive: true },
     });
-    return { tokens };
+    return tokens.map((token) => token.deviceToken);
   }
 
   async invalidateToken(deviceToken: string) {
