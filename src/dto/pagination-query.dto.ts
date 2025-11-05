@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
-import config from 'src/config/variables.config';
+import config from 'src/config/app/variables.config';
 
 const { defaultPage, defaultLimit, maxLimit } = config().pagination;
 
