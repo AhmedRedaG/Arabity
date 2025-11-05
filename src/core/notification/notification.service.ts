@@ -14,6 +14,8 @@ import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
 import { UserService } from '../user/user.service';
 import { NotificationOptionsQueryDto } from './dto/notification-options-query.dto';
 import { DeleteNotificationQueryDto } from './dto/delete-notification-query.dto';
+import { DeviceTokenService } from '../device-token/device-token.service';
+import { FirebaseNotificationService } from '../firebase-notification/firebase-notification.service';
 
 @Injectable()
 export class NotificationService {
@@ -22,10 +24,25 @@ export class NotificationService {
     private notificationRepository: Repository<Notification>,
     private userService: UserService,
     private utilsService: UtilsService,
+    private deviceTokenService: DeviceTokenService,
+    private firebaseNotificationService: FirebaseNotificationService,
   ) {}
 
   async create(dto: CreateNotificationDto) {
     await this.userService.findOneBy({ id: dto.userId });
+
+    const userDeviceTokens = await this.deviceTokenService.getUserTokens(
+      dto.userId,
+    );
+
+    if (userDeviceTokens.length !== 0) {
+      await this.firebaseNotificationService.sendToMultipleDevices(
+        userDeviceTokens,
+        dto.title,
+        dto.message,
+      );
+    }
+
     const notification = await this.notificationRepository.save(dto);
     return { notification };
   }
