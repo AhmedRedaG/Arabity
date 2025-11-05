@@ -4,15 +4,13 @@ import { NotificationController } from './notification.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Notification } from './entities/notification.entity';
 import { UserModule } from '../user/user.module';
-import { DeviceTokenModule } from '../device-token/device-token.module';
-import { FirebaseNotificationModule } from '../firebase-notification/firebase-notification.module';
+import { PushNotificationModule } from '../push-notification/push-notification.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Notification]),
     UserModule,
-    DeviceTokenModule,
-    FirebaseNotificationModule,
+    PushNotificationModule,
   ],
   controllers: [NotificationController],
   providers: [NotificationService],
