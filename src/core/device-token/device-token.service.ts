@@ -28,6 +28,13 @@ export class DeviceTokenService {
         deviceToken: dto.deviceToken,
       });
 
+      if (!existingToken.isActive) {
+        await this.deviceTokenRepository.update(existingToken.id, {
+          isActive: true,
+        });
+        existingToken.isActive = true;
+      }
+
       return { token: existingToken, isNew: false };
     } catch {
       const newToken = await this.deviceTokenRepository.save({
