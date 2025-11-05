@@ -7,6 +7,7 @@ import { Review } from '../../reviews/entities/review.entity';
 import { Notification } from '../../notification/entities/notification.entity';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { Address } from '../../address/entities/address.entity';
+import { DeviceToken } from 'src/core/device-token/entities/device-token.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -56,4 +57,7 @@ export class User extends MainFormat {
 
   @OneToMany(() => Address, (address) => address.user)
   addresses: Address[];
+
+  @OneToMany(() => DeviceToken, (deviceToken) => deviceToken.user)
+  deviceTokens: DeviceToken[];
 }
