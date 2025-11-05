@@ -19,6 +19,7 @@ import { PaymentModule } from './core/payment/payment.module';
 import { KashierPaymentModule } from './core/kashier-payment/kashier-payment.module';
 import { NotificationModule } from './core/notification/notification.module';
 import { FirebaseNotificationModule } from './core/firebase-notification/firebase-notification.module';
+import { DeviceTokenModule } from './core/device-token/device-token.module';
 import dbConfig from './config/db/db.config';
 import dbProductionConfig from './config/db/db.production.config';
 import variablesConfig from './config/app/variables.config';
@@ -51,6 +52,7 @@ import variablesConfig from './config/app/variables.config';
     KashierPaymentModule,
     NotificationModule,
     FirebaseNotificationModule,
+    DeviceTokenModule,
   ],
   controllers: [],
   providers: [],
