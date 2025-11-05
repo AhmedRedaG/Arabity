@@ -27,14 +27,15 @@ export class PushNotificationService {
       throw new NotFoundException('user has no device tokens');
     }
 
-    await this.firebaseNotificationService.sendToMultipleDevices(
-      deviceTokens,
-      dto.title,
-      dto.body,
-      dto.data,
-    );
+    const sendStatus =
+      await this.firebaseNotificationService.sendToMultipleDevices(
+        deviceTokens,
+        dto.title,
+        dto.body,
+        dto.data,
+      );
 
-    return { message: 'notification sent successfully' };
+    return { message: 'notification sent successfully', ...sendStatus };
   }
 
   async pushToMany(dto: CreateToManyPushNotificationDto) {
@@ -46,14 +47,15 @@ export class PushNotificationService {
       deviceTokens.push(...tokens);
     }
 
-    await this.firebaseNotificationService.sendToMultipleDevices(
-      deviceTokens,
-      dto.title,
-      dto.body,
-      dto.data,
-    );
+    const sendStatus =
+      await this.firebaseNotificationService.sendToMultipleDevices(
+        deviceTokens,
+        dto.title,
+        dto.body,
+        dto.data,
+      );
 
-    return { message: 'notifications sent successfully' };
+    return { message: 'notifications sent successfully', ...sendStatus };
   }
 
   async pushToAll(dto: CreateToAllPushNotificationDto) {
