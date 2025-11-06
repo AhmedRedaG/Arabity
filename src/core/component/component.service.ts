@@ -3,7 +3,7 @@ import { CreateComponentDto } from './dto/create-component.dto';
 import { UpdateComponentDto } from './dto/update-component.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Component } from 'src/core/component/entities/component.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { ComponentCategoryService } from 'src/core/component-category/component-category.service';
 import { CarTypeService } from 'src/core/car-type/car-type.service';
 import { PaginationQueryDto } from 'src/dto/pagination-query.dto';
@@ -48,9 +48,20 @@ export class ComponentService {
       inPagination.limit,
     );
 
-    const where = { isActive: inOptions.isActive };
-    if (inCondition) {
-      Object.assign(where, inCondition);
+    let where: TypeOrmFindOptionsWhere<Component> = [];
+
+    const baseConditions = {
+      isActive: inOptions.isActive,
+      ...inCondition,
+    };
+
+    if (inOptions.search) {
+      where = [
+        { ...baseConditions, name: ILike(`%${inOptions.search}%`) },
+        { ...baseConditions, description: ILike(`%${inOptions.search}%`) },
+      ];
+    } else {
+      where = baseConditions;
     }
 
     const [components, total] = await this.componentRepository.findAndCount({
