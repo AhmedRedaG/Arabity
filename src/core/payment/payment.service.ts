@@ -39,7 +39,7 @@ export class PaymentService {
     ) {
       await this.bookingService.updateStatus(
         inPayment.bookingId,
-        BookingStatus.IN_PROGRESS,
+        BookingStatus.CONFIRMED,
       );
     }
   }

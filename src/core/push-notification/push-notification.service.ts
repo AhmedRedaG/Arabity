@@ -8,6 +8,9 @@ import { UserService } from '../user/user.service';
 import { DeviceTokenService } from '../device-token/device-token.service';
 import { FirebaseNotificationService } from '../firebase-notification/firebase-notification.service';
 import { NotificationService } from '../notification/notification.service';
+import { BookingStatus } from '../booking/entities/booking.entity';
+import { BookingNotificationContent } from './content/booking-notification.content';
+import { NotificationType } from '../notification/entities/notification.entity';
 
 @Injectable()
 export class PushNotificationService {
@@ -16,6 +19,7 @@ export class PushNotificationService {
     private deviceTokenService: DeviceTokenService,
     private firebaseNotificationService: FirebaseNotificationService,
     private notificationService: NotificationService,
+    private bookingNotificationContent: BookingNotificationContent,
   ) {}
 
   async pushToOneAndSave(dto: CreateToOnePushNotificationDto) {
@@ -73,5 +77,23 @@ export class PushNotificationService {
     );
 
     return { message: 'notifications sent successfully' };
+  }
+
+  async pushBookingStatus(
+    userId: string,
+    bookingId: string,
+    status: BookingStatus,
+  ) {
+    const { title, body } = this.bookingNotificationContent.getTemplate(
+      status,
+      bookingId,
+    );
+
+    await this.pushToOneAndSave({
+      userId,
+      title,
+      body,
+      type: NotificationType.BOOKING,
+    });
   }
 }
