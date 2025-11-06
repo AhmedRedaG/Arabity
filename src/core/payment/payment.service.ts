@@ -20,6 +20,7 @@ import {
   TypeOrmFindOptionsWhere,
 } from 'src/types/typeorm-find-options.types';
 import { BookingStatus } from '../booking/entities/booking.entity';
+import { PushNotificationService } from '../push-notification/push-notification.service';
 
 @Injectable()
 export class PaymentService {
@@ -28,10 +29,20 @@ export class PaymentService {
     private paymentRepository: Repository<Payment>,
     private bookingService: BookingService,
     private utilsService: UtilsService,
+    private pushNotificationService: PushNotificationService,
   ) {}
 
   async create(inPayment: CreatePayment) {
     await this.paymentRepository.save(inPayment);
+
+    const booking = await this.bookingService.findOneBy({
+      id: inPayment.bookingId,
+    });
+    await this.pushNotificationService.pushPaymentStatus(
+      booking.userId,
+      inPayment.paymentStatus,
+      inPayment.amount,
+    );
 
     if (
       inPayment.paymentStatus === PaymentStatus.PAID ||
@@ -39,7 +50,7 @@ export class PaymentService {
     ) {
       await this.bookingService.updateStatus(
         inPayment.bookingId,
-        BookingStatus.IN_PROGRESS,
+        BookingStatus.CONFIRMED,
       );
     }
   }
@@ -154,7 +165,7 @@ export class PaymentService {
   }
 
   async updateStatus(id: string, paymentStatus: PaymentStatus) {
-    await this.findOneBy({ id });
+    const { payment } = await this.findOne(id);
 
     let paidAt: Date | undefined;
     if (paymentStatus === PaymentStatus.PAID) {
@@ -162,6 +173,13 @@ export class PaymentService {
     }
 
     await this.paymentRepository.update(id, { paymentStatus, paidAt });
+
+    await this.pushNotificationService.pushPaymentStatus(
+      payment.booking.userId,
+      paymentStatus,
+      payment.amount,
+    );
+
     return { message: 'payment status updated successfully' };
   }
 }

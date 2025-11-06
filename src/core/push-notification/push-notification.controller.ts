@@ -19,8 +19,8 @@ export class PushNotificationController {
 
   @Role(UserRole.ADMIN)
   @Post('one')
-  pushToOne(@Body() dto: CreateToOnePushNotificationDto) {
-    return this.pushNotificationService.pushToOne(dto);
+  pushToOneAndSave(@Body() dto: CreateToOnePushNotificationDto) {
+    return this.pushNotificationService.pushToOneAndSave(dto);
   }
 
   @Role(UserRole.ADMIN)
