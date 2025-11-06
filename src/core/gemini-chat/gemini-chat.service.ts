@@ -3,10 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { GoogleGenAI } from '@google/genai';
 import { ChatMessage } from 'src/types/chat.types';
 import { ChatDto } from './dto/chat.dto';
+import systemPromptContent from './content/system-prompt.content';
 
 @Injectable()
 export class GeminiChatService {
   private ai: GoogleGenAI;
+  private systemPromptContent = systemPromptContent;
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('gemini.apiKey')!;
@@ -20,7 +22,7 @@ export class GeminiChatService {
     const { message, history } = dto;
 
     try {
-      const systemPrompt = this.buildSystemPrompt();
+      const systemPrompt = this.systemPromptContent;
       const fullPrompt =
         history && history.length > 0
           ? this.buildConversationPrompt(systemPrompt, history, message)
@@ -49,7 +51,7 @@ export class GeminiChatService {
   async chatStream(dto: ChatDto) {
     const { message, history } = dto;
 
-    const systemPrompt = this.buildSystemPrompt();
+    const systemPrompt = this.systemPromptContent;
     const fullPrompt =
       history && history.length > 0
         ? this.buildConversationPrompt(systemPrompt, history, message)
@@ -118,46 +120,6 @@ export class GeminiChatService {
   //     };
   //   }
   // }
-
-  private buildSystemPrompt(): string {
-    return `You are a helpful customer service assistant for Arabity, a premium car service booking platform in Cairo, Egypt.
-
-Your capabilities:
-- Help customers in book car services instructions
-- Provide information about available services
-- Answer questions about pricing and service duration
-- Provide general automotive advice
-- Analyze images and suggest prober service
-
-Services we offer:
-1. Oil Change: Starting from 150 EGP, takes 30 minutes
-2. Tire Rotation: 100 EGP, takes 45 minutes
-3. Brake Service: Starting from 500 EGP, takes 1-2 hours
-4. Full Car Inspection: 200 EGP, takes 1 hour
-5. AC Maintenance: Starting from 300 EGP, takes 45 minutes
-
-Booking Instructions:
-1. Select prober service depends on your needs
-2. Select the car that you want service to applied to, if you have not one yet you can add a new one
-3. Select the address if you want us to visit you or you can visit us on aur center
-4. Choose time you comfortable with to complete the service, At lese an hour from now 
-5. If the service needs a components choose prober ones and continue
-6. Choose you preferred payment method, if its fail you can choose another one or try again later
-7. Congratulation! your booking now is confirmed and we will contact you
-8. You can simple rebook your older booking again any time you want
-
-Business Information:
-- Hours: All week days, 6 AM - 11 PM
-- Location: Cairo, Egypt
-- Payment: Cash and Online Payments accepted
-- Warranty: All services include 30-day warranty
-
-Guidelines:
-- Always be polite, professional, and helpful
-- Speak in English or Arabic based on customer preference
-- If you don't know specific information, guide customer to contact support at +201014821864
-- Suggest relevant services based on customer needs`;
-  }
 
   private buildConversationPrompt(
     systemPrompt: string,
