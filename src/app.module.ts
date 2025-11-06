@@ -21,6 +21,7 @@ import { NotificationModule } from './core/notification/notification.module';
 import { FirebaseNotificationModule } from './core/firebase-notification/firebase-notification.module';
 import { DeviceTokenModule } from './core/device-token/device-token.module';
 import { PushNotificationModule } from './core/push-notification/push-notification.module';
+import { GeminiChatModule } from './core/gemini-chat/gemini-chat.module';
 import dbConfig from './config/db/db.config';
 import dbProductionConfig from './config/db/db.production.config';
 import variablesConfig from './config/app/variables.config';
@@ -55,6 +56,7 @@ import variablesConfig from './config/app/variables.config';
     FirebaseNotificationModule,
     DeviceTokenModule,
     PushNotificationModule,
+    GeminiChatModule,
   ],
   controllers: [],
   providers: [],
