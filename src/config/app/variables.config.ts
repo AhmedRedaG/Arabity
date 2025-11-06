@@ -82,4 +82,8 @@ export default () => ({
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
     privateKey: process.env.FIREBASE_PRIVATE_KEY,
   },
+
+  gemini: {
+    apiKey: process.env.GEMINI_API_KEY,
+  },
 });
