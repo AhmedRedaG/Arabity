@@ -9,6 +9,7 @@ import { ServiceModule } from 'src/core/service/service.module';
 import { UserModule } from 'src/core/user/user.module';
 import { ComponentModule } from '../component/component.module';
 import { ComponentCategoryModule } from '../component-category/component-category.module';
+import { PushNotificationModule } from '../push-notification/push-notification.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ComponentCategoryModule } from '../component-category/component-categor
     AddressModule,
     ComponentModule,
     ComponentCategoryModule,
+    PushNotificationModule,
   ],
   controllers: [BookingController],
   providers: [BookingService],
