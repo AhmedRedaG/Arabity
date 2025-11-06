@@ -5,12 +5,14 @@ import { KashierPaymentModule } from 'src/core/kashier-payment/kashier-payment.m
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from './entities/payment.entity';
 import { BookingModule } from '../booking/booking.module';
+import { PushNotificationModule } from '../push-notification/push-notification.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Payment]),
     KashierPaymentModule,
     BookingModule,
+    PushNotificationModule,
   ],
   controllers: [PaymentController],
   providers: [PaymentService],

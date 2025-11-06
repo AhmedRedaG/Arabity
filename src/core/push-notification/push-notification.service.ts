@@ -11,6 +11,8 @@ import { NotificationService } from '../notification/notification.service';
 import { BookingStatus } from '../booking/entities/booking.entity';
 import { BookingNotificationContent } from './content/booking-notification.content';
 import { NotificationType } from '../notification/entities/notification.entity';
+import { PaymentStatus } from '../payment/entities/payment.entity';
+import { PaymentNotificationContent } from './content/payment-notification.content';
 
 @Injectable()
 export class PushNotificationService {
@@ -20,6 +22,7 @@ export class PushNotificationService {
     private firebaseNotificationService: FirebaseNotificationService,
     private notificationService: NotificationService,
     private bookingNotificationContent: BookingNotificationContent,
+    private paymentNotificationContent: PaymentNotificationContent,
   ) {}
 
   async pushToOneAndSave(dto: CreateToOnePushNotificationDto) {
@@ -94,6 +97,24 @@ export class PushNotificationService {
       title,
       body,
       type: NotificationType.BOOKING,
+    });
+  }
+
+  async pushPaymentStatus(
+    userId: string,
+    status: PaymentStatus,
+    amount?: number,
+  ) {
+    const { title, body } = this.paymentNotificationContent.getTemplate(
+      status,
+      amount,
+    );
+
+    await this.pushToOneAndSave({
+      userId,
+      title,
+      body,
+      type: NotificationType.PAYMENT,
     });
   }
 }

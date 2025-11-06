@@ -6,6 +6,7 @@ import { DeviceTokenModule } from '../device-token/device-token.module';
 import { FirebaseNotificationModule } from '../firebase-notification/firebase-notification.module';
 import { NotificationModule } from '../notification/notification.module';
 import { BookingNotificationContent } from './content/booking-notification.content';
+import { PaymentNotificationContent } from './content/payment-notification.content';
 
 @Module({
   imports: [
@@ -15,7 +16,11 @@ import { BookingNotificationContent } from './content/booking-notification.conte
     NotificationModule,
   ],
   controllers: [PushNotificationController],
-  providers: [PushNotificationService, BookingNotificationContent],
+  providers: [
+    PushNotificationService,
+    BookingNotificationContent,
+    PaymentNotificationContent,
+  ],
   exports: [PushNotificationService],
 })
 export class PushNotificationModule {}
