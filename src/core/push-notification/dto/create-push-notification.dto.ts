@@ -1,11 +1,13 @@
 import {
   IsArray,
+  IsEnum,
   IsObject,
   IsOptional,
   IsString,
   IsUUID,
   Length,
 } from 'class-validator';
+import { NotificationType } from 'src/core/notification/entities/notification.entity';
 
 export class CreatePushNotificationDto {
   @IsString()
@@ -24,6 +26,9 @@ export class CreatePushNotificationDto {
 export class CreateToOnePushNotificationDto extends CreatePushNotificationDto {
   @IsUUID()
   userId: string;
+
+  @IsEnum(NotificationType)
+  type: NotificationType;
 }
 
 export class CreateToManyPushNotificationDto extends CreatePushNotificationDto {

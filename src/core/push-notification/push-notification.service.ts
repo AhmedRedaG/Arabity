@@ -7,6 +7,7 @@ import {
 import { UserService } from '../user/user.service';
 import { DeviceTokenService } from '../device-token/device-token.service';
 import { FirebaseNotificationService } from '../firebase-notification/firebase-notification.service';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class PushNotificationService {
@@ -14,9 +15,10 @@ export class PushNotificationService {
     private userService: UserService,
     private deviceTokenService: DeviceTokenService,
     private firebaseNotificationService: FirebaseNotificationService,
+    private notificationService: NotificationService,
   ) {}
 
-  async pushToOne(dto: CreateToOnePushNotificationDto) {
+  async pushToOneAndSave(dto: CreateToOnePushNotificationDto) {
     await this.userService.findOneBy({ id: dto.userId });
 
     const deviceTokens = await this.deviceTokenService.getUserTokens(
@@ -26,6 +28,8 @@ export class PushNotificationService {
     if (deviceTokens.length === 0) {
       throw new NotFoundException('user has no device tokens');
     }
+
+    await this.notificationService.create(dto);
 
     const sendStatus =
       await this.firebaseNotificationService.sendToMultipleDevices(
