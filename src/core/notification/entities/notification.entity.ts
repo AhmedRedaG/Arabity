@@ -15,7 +15,7 @@ export class Notification extends MainFormat {
   title: string;
 
   @Column('text')
-  message: string;
+  body: string;
 
   @Column({ length: 20, enum: NotificationType })
   type: NotificationType;
