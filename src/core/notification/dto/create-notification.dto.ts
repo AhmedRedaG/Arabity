@@ -8,7 +8,7 @@ export class CreateNotificationDto {
 
   @IsString()
   @Length(1, 9999)
-  message: string;
+  body: string;
 
   @IsEnum(NotificationType)
   type: NotificationType;

@@ -14,7 +14,6 @@ import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
 import { UserService } from '../user/user.service';
 import { NotificationOptionsQueryDto } from './dto/notification-options-query.dto';
 import { DeleteNotificationQueryDto } from './dto/delete-notification-query.dto';
-import { PushNotificationService } from '../push-notification/push-notification.service';
 
 @Injectable()
 export class NotificationService {
@@ -23,18 +22,10 @@ export class NotificationService {
     private notificationRepository: Repository<Notification>,
     private userService: UserService,
     private utilsService: UtilsService,
-    private pushNotificationService: PushNotificationService,
   ) {}
 
   async create(dto: CreateNotificationDto) {
     await this.userService.findOneBy({ id: dto.userId });
-
-    await this.pushNotificationService.pushToOne({
-      userId: dto.userId,
-      title: dto.title,
-      body: dto.message,
-    });
-
     const notification = await this.notificationRepository.save(dto);
     return { notification };
   }

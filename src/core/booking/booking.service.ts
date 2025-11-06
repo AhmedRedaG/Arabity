@@ -27,6 +27,7 @@ import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
 import { Address } from '../address/entities/address.entity';
 import { ConfigService } from '@nestjs/config';
 import { RebookBookingDto } from './dto/rebook-booking.dto';
+import { PushNotificationService } from '../push-notification/push-notification.service';
 
 @Injectable()
 export class BookingService {
@@ -40,6 +41,7 @@ export class BookingService {
     private componentCategoryService: ComponentCategoryService,
     private utilsService: UtilsService,
     private configService: ConfigService,
+    private pushNotificationService: PushNotificationService,
   ) {}
 
   isValidComponentsAndServiceCategories(
@@ -169,6 +171,12 @@ export class BookingService {
       estimatedDurationMin,
       details: componentsDetails,
     });
+
+    await this.pushNotificationService.pushBookingStatus(
+      userId,
+      booking.id,
+      booking.status,
+    );
 
     return { booking };
   }
@@ -342,16 +350,29 @@ export class BookingService {
   }
 
   async updateStatus(bookingId: string, status: BookingStatus) {
-    await this.findOneBy({ id: bookingId });
+    const booking = await this.findOneBy({ id: bookingId });
     await this.bookingRepository.update(bookingId, { status });
+    await this.pushNotificationService.pushBookingStatus(
+      booking.userId,
+      bookingId,
+      status,
+    );
     return { message: 'booking status updated successfully' };
   }
 
   async cancel(userId: string, bookingId: string) {
-    await this.findOneBy({ id: bookingId, user: { id: userId } });
+    await this.findOneBy({
+      id: bookingId,
+      user: { id: userId },
+    });
     await this.bookingRepository.update(bookingId, {
       status: BookingStatus.CANCELLED,
     });
+    await this.pushNotificationService.pushBookingStatus(
+      userId,
+      bookingId,
+      BookingStatus.CANCELLED,
+    );
     return { message: 'booking cancelled successfully' };
   }
 }

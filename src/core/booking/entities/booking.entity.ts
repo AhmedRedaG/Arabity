@@ -78,6 +78,8 @@ export class Booking extends MainFormat {
   })
   @Index()
   user: User;
+  @Column()
+  userId: string;
 
   @ManyToOne(() => Car, (car) => car.bookings, {
     onDelete: 'SET NULL',

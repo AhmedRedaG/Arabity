@@ -7,6 +7,12 @@ import {
 import { UserService } from '../user/user.service';
 import { DeviceTokenService } from '../device-token/device-token.service';
 import { FirebaseNotificationService } from '../firebase-notification/firebase-notification.service';
+import { NotificationService } from '../notification/notification.service';
+import { BookingStatus } from '../booking/entities/booking.entity';
+import { BookingNotificationContent } from './content/booking-notification.content';
+import { NotificationType } from '../notification/entities/notification.entity';
+import { PaymentStatus } from '../payment/entities/payment.entity';
+import { PaymentNotificationContent } from './content/payment-notification.content';
 
 @Injectable()
 export class PushNotificationService {
@@ -14,9 +20,12 @@ export class PushNotificationService {
     private userService: UserService,
     private deviceTokenService: DeviceTokenService,
     private firebaseNotificationService: FirebaseNotificationService,
+    private notificationService: NotificationService,
+    private bookingNotificationContent: BookingNotificationContent,
+    private paymentNotificationContent: PaymentNotificationContent,
   ) {}
 
-  async pushToOne(dto: CreateToOnePushNotificationDto) {
+  async pushToOneAndSave(dto: CreateToOnePushNotificationDto) {
     await this.userService.findOneBy({ id: dto.userId });
 
     const deviceTokens = await this.deviceTokenService.getUserTokens(
@@ -26,6 +35,8 @@ export class PushNotificationService {
     if (deviceTokens.length === 0) {
       throw new NotFoundException('user has no device tokens');
     }
+
+    await this.notificationService.create(dto);
 
     const sendStatus =
       await this.firebaseNotificationService.sendToMultipleDevices(
@@ -69,5 +80,41 @@ export class PushNotificationService {
     );
 
     return { message: 'notifications sent successfully' };
+  }
+
+  async pushBookingStatus(
+    userId: string,
+    bookingId: string,
+    status: BookingStatus,
+  ) {
+    const { title, body } = this.bookingNotificationContent.getTemplate(
+      status,
+      bookingId,
+    );
+
+    await this.pushToOneAndSave({
+      userId,
+      title,
+      body,
+      type: NotificationType.BOOKING,
+    });
+  }
+
+  async pushPaymentStatus(
+    userId: string,
+    status: PaymentStatus,
+    amount?: number,
+  ) {
+    const { title, body } = this.paymentNotificationContent.getTemplate(
+      status,
+      amount,
+    );
+
+    await this.pushToOneAndSave({
+      userId,
+      title,
+      body,
+      type: NotificationType.PAYMENT,
+    });
   }
 }
