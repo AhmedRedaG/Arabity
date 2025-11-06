@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { User } from 'src/core/user/entities/user.entity';
-import { BrevoMailOptions } from '../types/email-options.types';
+import { BrevoMailOptions } from '../../../types/email-options.types';
 
 @Injectable()
 export class VerifyAccountMail {

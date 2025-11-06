@@ -4,7 +4,7 @@ import { VerifyAccountMail } from './content/verify.content';
 import { User } from 'src/core/user/entities/user.entity';
 import { ResetPasswordMail } from './content/reset.content';
 import * as SibApiV3Sdk from 'sib-api-v3-sdk';
-import { BrevoMailOptions } from './types/email-options.types';
+import { BrevoMailOptions } from '../../types/email-options.types';
 
 @Injectable()
 export class EmailService implements OnModuleInit {
