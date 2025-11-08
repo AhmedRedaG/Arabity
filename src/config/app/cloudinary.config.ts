@@ -1,15 +1,11 @@
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary, ConfigOptions, UploadApiOptions } from 'cloudinary';
+import variablesConfig from 'src/config/app/variables.config';
 
-const ALLOWED_IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-const CLOUDINARY_UPLOAD_TIMEOUT = 10 * 60 * 1000; // 10 minutes
+const { allowedImageTypes } = variablesConfig().upload;
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-export const imageUploadOptions = (imageCategory: string) => {
+export const cloudinaryImageUploadOptions = (
+  imageCategory: string = 'general',
+): UploadApiOptions => {
   return {
     resource_type: 'image',
     folder: `arabity/images/${imageCategory}`,
@@ -17,11 +13,27 @@ export const imageUploadOptions = (imageCategory: string) => {
     fetch_format: 'auto',
     use_filename: true,
     unique_filename: false,
-    allowed_formats: ALLOWED_IMAGE_TYPES,
-    timeout: CLOUDINARY_UPLOAD_TIMEOUT,
+    allowed_formats: allowedImageTypes,
+    timeout: 1000 * 60 * 10, // 10 minutes
     overwrite: true,
     invalidate: true,
   };
 };
+
+if (
+  !process.env.CLOUDINARY_CLOUD_NAME ||
+  !process.env.CLOUDINARY_API_KEY ||
+  !process.env.CLOUDINARY_API_SECRET
+) {
+  throw new Error('cloudinary environment variables are missing');
+}
+
+const cloudinaryConfig: ConfigOptions = {
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+};
+
+cloudinary.config(cloudinaryConfig);
 
 export default cloudinary;
