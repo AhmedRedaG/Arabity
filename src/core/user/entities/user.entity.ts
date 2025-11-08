@@ -25,7 +25,10 @@ export class User extends MainFormat {
   @Column({ length: 150, unique: true })
   email: string;
 
-  @Column('text', { nullable: true, select: false })
+  @Column({ length: 30, unique: true, nullable: true })
+  googleId?: string;
+
+  @Column({ length: 80, nullable: true, select: false })
   password?: string;
 
   @Column({ default: false })

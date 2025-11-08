@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/core/user/entities/user.entity';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthUtilsService } from 'src/core/auth-utils/auth-utils.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -105,6 +105,10 @@ export class UserService {
     password.at(0); // ts -_-
 
     return user;
+  }
+
+  async createGoogleUser(userData: DeepPartial<User>) {
+    return await this.userRepository.save(userData);
   }
 
   async update(id: string, dto: UpdateUserDto) {
