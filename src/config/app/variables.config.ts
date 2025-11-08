@@ -86,4 +86,8 @@ export default () => ({
   gemini: {
     apiKey: process.env.GEMINI_API_KEY,
   },
+
+  googleOAuth: {
+    clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
+  },
 });
