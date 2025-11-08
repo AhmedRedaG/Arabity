@@ -1,3 +1,5 @@
+import path from 'path';
+
 export default () => ({
   auth: {
     path: '/auth',
@@ -89,5 +91,11 @@ export default () => ({
 
   googleOAuth: {
     clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
+  },
+
+  upload: {
+    maxImageSize: 5 * 1024 * 1024, // 5MB
+    allowedImageTypes: ['jpg', 'jpeg', 'png', 'webp'],
+    uploadDir: path.resolve(process.cwd(), 'uploads'),
   },
 });
