@@ -11,6 +11,7 @@ import { ComponentCategoryService } from 'src/core/component-category/component-
 import { ComponentCategory } from 'src/core/component-category/entities/component-category.entity';
 import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
 import { UpdateRatingStatus } from 'src/types/rating.types';
+import { UploadedImageMainDetails } from 'src/types/upload.types';
 
 @Injectable()
 export class ServiceService {
@@ -136,5 +137,29 @@ export class ServiceService {
       ratesCount: ratesCount,
       rating: parseFloat(newAverageRating.toFixed(2)),
     });
+  }
+
+  async saveOrUpdateImage(
+    serviceId: string,
+    newImage: UploadedImageMainDetails,
+  ) {
+    const { image } = await this.findOneBy({ id: serviceId });
+    await this.serviceRepository.update(serviceId, {
+      image: newImage,
+    });
+    return {
+      oldImage: image,
+    };
+  }
+
+  async removeImage(serviceId: string) {
+    const { image } = await this.findOneBy({ id: serviceId });
+    if (!image) {
+      throw new NotFoundException('service has no image');
+    }
+    await this.serviceRepository.update(serviceId, { image: null });
+    return {
+      oldImage: image,
+    };
   }
 }

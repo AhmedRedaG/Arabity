@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateComponentDto } from './dto/create-component.dto';
 import { UpdateComponentDto } from './dto/update-component.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +16,7 @@ import { UtilsService } from 'src/core/utils/utils.service';
 import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
 import { ComponentCategory } from '../component-category/entities/component-category.entity';
 import { CarType } from '../car-type/entities/car-type.entity';
+import { UploadedImageMainDetails } from 'src/types/upload.types';
 
 @Injectable()
 export class ComponentService {
@@ -160,5 +165,19 @@ export class ComponentService {
     });
 
     return { message: 'component updated successfully' };
+  }
+
+  async saveOrAddImages(
+    componentId: string,
+    newImages: UploadedImageMainDetails[],
+  ) {
+    const { images } = await this.findOneBy({ id: componentId });
+
+    images.push(...newImages);
+    if (images.length > 5) {
+      throw new BadRequestException('can not add more than 5 images');
+    }
+
+    await this.componentRepository.update(componentId, { images });
   }
 }

@@ -8,6 +8,7 @@ import { Notification } from '../../notification/entities/notification.entity';
 import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { Address } from '../../address/entities/address.entity';
 import { DeviceToken } from 'src/core/device-token/entities/device-token.entity';
+import type { UploadedImageMainDetails } from 'src/types/upload.types';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -36,6 +37,9 @@ export class User extends MainFormat {
 
   @Column({ length: 20, enum: UserRole, default: UserRole.CUSTOMER })
   role: UserRole;
+
+  @Column('json', { nullable: true })
+  image: UploadedImageMainDetails | null;
 
   @UpdateDateColumn()
   updatedAt: Date;

@@ -11,6 +11,7 @@ import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { ComponentCategory } from '../../component-category/entities/component-category.entity';
 import { BookingDetail } from '../../booking/entities/booking-detail.entity';
 import { CarType } from '../../car-type/entities/car-type.entity';
+import { UploadedImageMainDetails } from 'src/types/upload.types';
 
 @Entity('components')
 export class Component extends MainFormat {
@@ -26,8 +27,8 @@ export class Component extends MainFormat {
   @Column()
   estimatedDurationMin: number;
 
-  @Column('text', { nullable: true })
-  imageUrl: string;
+  @Column('jsonb', { default: [] })
+  images: UploadedImageMainDetails[];
 
   @Column({ default: true })
   isActive: boolean;
