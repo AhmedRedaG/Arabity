@@ -11,7 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Observable, from, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { GeminiChatService } from './gemini-chat.service';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { ChatDto } from './dto/chat.dto';
@@ -29,13 +29,29 @@ export class GeminiChatController {
 
   @Sse('stream')
   async streamChat(@Query() dto: ChatDto): Promise<Observable<MessageEvent>> {
-    return from(this.geminiService.chatStream(dto)).pipe(
-      map((stream) => {
-        return {
-          data: { chunk: stream },
-        } as MessageEvent;
-      }),
-    );
+    const stream = await this.geminiService.chatStream(dto);
+    const delayMs = 5;
+
+    return new Observable<MessageEvent>((subscriber) => {
+      (async () => {
+        try {
+          for await (const chunk of stream) {
+            const text = chunk.text || '';
+
+            for (const char of text) {
+              subscriber.next({
+                data: { chunk: char },
+              } as MessageEvent);
+
+              await new Promise((resolve) => setTimeout(resolve, delayMs));
+            }
+          }
+          subscriber.complete();
+        } catch (error) {
+          subscriber.error(error);
+        }
+      })();
+    });
   }
 
   @Post('analyze-image')

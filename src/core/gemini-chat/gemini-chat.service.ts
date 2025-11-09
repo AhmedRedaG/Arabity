@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GoogleGenAI } from '@google/genai';
 import { ChatMessage } from 'src/types/chat.types';
@@ -21,13 +21,20 @@ export class GeminiChatService {
   async chat(dto: ChatDto) {
     const { message, history } = dto;
 
-    try {
-      const systemPrompt = this.systemPromptContent;
-      const fullPrompt =
-        history && history.length > 0
-          ? this.buildConversationPrompt(systemPrompt, history, message)
-          : `${systemPrompt}\n\nCustomer: ${message}\nAssistant:`;
+    if (history && history.length > 0) {
+      const validHistory = history?.filter(this.isChatMessage);
+      if (validHistory.length !== history.length) {
+        throw new BadRequestException('invalid history format');
+      }
+    }
 
+    const systemPrompt = this.systemPromptContent;
+    const fullPrompt =
+      history && history.length > 0
+        ? this.buildConversationPrompt(systemPrompt, history, message)
+        : `${systemPrompt}\n\nCustomer: ${message}\nAssistant:`;
+
+    try {
       const response = await this.ai.models.generateContent({
         model: 'gemini-2.0-flash-exp',
         contents: fullPrompt,
@@ -48,25 +55,27 @@ export class GeminiChatService {
     }
   }
 
-  async chatStream(dto: ChatDto) {
+  chatStream(dto: ChatDto) {
     const { message, history } = dto;
 
     const systemPrompt = this.systemPromptContent;
-    const fullPrompt =
-      history && history.length > 0
-        ? this.buildConversationPrompt(systemPrompt, history, message)
-        : `${systemPrompt}\n\nCustomer: ${message}\nAssistant:`;
+    let fullPrompt: string;
 
-    const stream = await this.ai.models.generateContentStream({
+    if (history && history.length > 0) {
+      const validHistory = history?.filter(this.isChatMessage);
+      if (validHistory.length !== history.length) {
+        throw new BadRequestException('invalid history format');
+      }
+      fullPrompt = this.buildConversationPrompt(systemPrompt, history, message);
+    } else {
+      fullPrompt = `${systemPrompt}\n\nCustomer: ${message}\nAssistant:`;
+    }
+
+    return this.ai.models.generateContentStream({
       model: 'gemini-2.0-flash-exp',
       contents: fullPrompt,
-      config: {
-        temperature: 0.7,
-        maxOutputTokens: 1024,
-      },
+      config: { temperature: 0.7, maxOutputTokens: 1024 },
     });
-
-    return stream;
   }
 
   async analyzeCarImage(imageData: string, prompt: string) {
@@ -120,6 +129,15 @@ export class GeminiChatService {
   //     };
   //   }
   // }
+
+  private isChatMessage(obj: any): obj is ChatMessage {
+    return (
+      typeof obj === 'object' &&
+      obj !== null &&
+      typeof obj.role === 'string' &&
+      typeof obj.content === 'string'
+    );
+  }
 
   private buildConversationPrompt(
     systemPrompt: string,
