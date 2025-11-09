@@ -171,13 +171,32 @@ export class ComponentService {
     componentId: string,
     newImages: UploadedImageMainDetails[],
   ) {
+    await this.componentRepository.update(componentId, { images: newImages });
+  }
+
+  async removeImages(componentId: string, publicIds: string[]) {
     const { images } = await this.findOneBy({ id: componentId });
 
-    images.push(...newImages);
-    if (images.length > 5) {
-      throw new BadRequestException('can not add more than 5 images');
+    const invalidIds = publicIds.filter(
+      (id) => !images.some((img) => img.publicId === id),
+    );
+    if (invalidIds.length > 0) {
+      throw new BadRequestException(
+        `invalid image public ids: ${invalidIds.join(', ')}`,
+      );
     }
 
-    await this.componentRepository.update(componentId, { images });
+    const publicIdSet = new Set(publicIds);
+
+    const remainingImages = images.filter(
+      (img) => !publicIdSet.has(img.publicId),
+    );
+    if (remainingImages.length === images.length) {
+      throw new BadRequestException('no matching images found to delete.');
+    }
+
+    await this.componentRepository.update(componentId, {
+      images: remainingImages,
+    });
   }
 }
