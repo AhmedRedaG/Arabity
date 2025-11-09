@@ -1,25 +1,42 @@
 import { Injectable } from '@nestjs/common';
-import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
-import cloudinary, {
-  cloudinaryImageUploadOptions,
-} from 'src/config/app/cloudinary.config';
+import {
+  ConfigAndUrlOptions,
+  UploadApiErrorResponse,
+  UploadApiResponse,
+} from 'cloudinary';
+import { cloudinaryImageUploadOptions } from 'src/config/app/cloudinary.config';
 import * as streamifier from 'streamifier';
-import fs from 'fs/promises';
+import { ImageCategory } from 'src/types/upload.types';
+import { ConfigService } from '@nestjs/config';
+import { CloudinaryConfig } from 'src/types/config.types';
+import { v2 as cloudinaryApi } from 'cloudinary';
 
 @Injectable()
 export class CloudinaryUploadService {
-  async uploadImage(
+  private cloudinary = cloudinaryApi;
+
+  constructor(private configService: ConfigService) {
+    const { cloudName, apiKey, apiSecret } =
+      this.configService.get<CloudinaryConfig>('cloudinary')!;
+
+    this.cloudinary.config({
+      cloud_name: cloudName,
+      api_key: apiKey,
+      api_secret: apiSecret,
+    });
+  }
+
+  uploadImage(
     file: Express.Multer.File,
-    folder?: string,
-  ): Promise<UploadApiResponse | UploadApiErrorResponse> {
+    folder: ImageCategory,
+  ): Promise<UploadApiResponse> {
     const imageUploadOptions = cloudinaryImageUploadOptions(folder);
     return new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
+      const uploadStream = this.cloudinary.uploader.upload_stream(
         imageUploadOptions,
         (error, result) => {
-          fs.unlink(file.path);
           if (error) return reject(error);
-          if (result) return resolve(result);
+          resolve(result!);
         },
       );
 
@@ -27,24 +44,21 @@ export class CloudinaryUploadService {
     });
   }
 
-  async uploadMultipleImages(
-    files: Express.Multer.File[],
-    folder?: string,
-  ): Promise<(UploadApiResponse | UploadApiErrorResponse)[]> {
+  uploadMultipleImages(files: Express.Multer.File[], folder: ImageCategory) {
     const uploadPromises = files.map((file) => this.uploadImage(file, folder));
     return Promise.all(uploadPromises);
   }
 
-  async deleteImage(publicId: string) {
-    return cloudinary.uploader.destroy(publicId);
+  deleteImage(publicId: string) {
+    return this.cloudinary.uploader.destroy(publicId);
   }
 
-  async deleteMultipleImages(publicIds: string[]) {
-    return cloudinary.api.delete_resources(publicIds);
+  deleteMultipleImages(publicIds: string[]) {
+    return this.cloudinary.api.delete_resources(publicIds);
   }
 
-  getImageUrl(publicId: string, options?: any) {
-    return cloudinary.url(publicId, options);
+  getImageUrl(publicId: string, options?: ConfigAndUrlOptions) {
+    return this.cloudinary.url(publicId, options);
   }
 
   getThumbnail(
@@ -52,7 +66,7 @@ export class CloudinaryUploadService {
     width: number = 200,
     height: number = 200,
   ): string {
-    return cloudinary.url(publicId, {
+    return this.cloudinary.url(publicId, {
       width,
       height,
       crop: 'fill',

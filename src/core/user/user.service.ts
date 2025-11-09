@@ -17,6 +17,7 @@ import { PaginationQueryDto } from 'src/dto/pagination-query.dto';
 import { OptionsQueryDto } from 'src/dto/options-query.dto';
 import { UtilsService } from 'src/core/utils/utils.service';
 import { TypeOrmFindOptionsWhere } from 'src/types/typeorm-find-options.types';
+import { UploadedImageMainDetails } from 'src/types/upload.types';
 
 @Injectable()
 export class UserService {
@@ -116,6 +117,27 @@ export class UserService {
     await this.userRepository.update(id, dto);
 
     return { message: 'user updated successfully' };
+  }
+
+  async saveOrUpdateImage(userId: string, newImage: UploadedImageMainDetails) {
+    const { image } = await this.findOneBy({ id: userId });
+    await this.userRepository.update(userId, {
+      image: newImage,
+    });
+    return {
+      oldImage: image,
+    };
+  }
+
+  async removeImage(userId: string) {
+    const { image } = await this.findOneBy({ id: userId });
+    if (!image) {
+      throw new NotFoundException('user has no image');
+    }
+    await this.userRepository.update(userId, { image: null });
+    return {
+      oldImage: image,
+    };
   }
 
   async remove(id: string) {

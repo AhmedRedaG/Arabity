@@ -3,7 +3,6 @@ import {
   IsOptional,
   IsBoolean,
   IsInt,
-  IsUrl,
   Min,
   Length,
   IsArray,
@@ -26,10 +25,6 @@ export class CreateServiceDto {
   @IsInt()
   @Min(1)
   basePrice: number;
-
-  @IsUrl()
-  @IsOptional()
-  imageUrl?: string;
 
   @IsBoolean()
   @IsOptional()

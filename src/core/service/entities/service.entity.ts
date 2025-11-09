@@ -10,6 +10,7 @@ import { MainFormat } from 'src/typeorm/abstractions/main-format.abstract';
 import { Booking } from '../../booking/entities/booking.entity';
 import { Review } from '../../reviews/entities/review.entity';
 import { ComponentCategory } from '../../component-category/entities/component-category.entity';
+import type { UploadedImageMainDetails } from 'src/types/upload.types';
 
 export enum requiredCategoryStatus {
   EQUAL = 'equal',
@@ -26,9 +27,6 @@ export class Service extends MainFormat {
 
   @Column()
   basePrice: number;
-
-  @Column('text', { nullable: true })
-  imageUrl: string;
 
   @Column({ default: true })
   isActive: boolean;
@@ -50,6 +48,9 @@ export class Service extends MainFormat {
 
   @Column('decimal', { precision: 3, scale: 2, default: 0 })
   rating: number;
+
+  @Column('json', { nullable: true })
+  image: UploadedImageMainDetails | null;
 
   @UpdateDateColumn()
   updatedAt: Date;
