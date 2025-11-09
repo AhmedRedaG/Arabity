@@ -8,6 +8,8 @@ import {
   ParseUUIDPipe,
   UploadedFiles,
   ParseFilePipe,
+  Delete,
+  Body,
 } from '@nestjs/common';
 import { UploadService } from './upload.service';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
@@ -20,6 +22,7 @@ import {
   multerUploadImageOptions,
   validateUploadImagePipList,
 } from 'src/config/app/multer.config';
+import { DeleteImageDto } from './dto/delete-image.dto';
 
 @UseGuards(AuthGuard)
 @Controller('upload')
@@ -32,7 +35,14 @@ export class UploadController {
     @UploadedFile(new ParseFilePipe({ validators: validateUploadImagePipList }))
     image: Express.Multer.File,
     @User('sub') userId: string,
-  ) {}
+  ) {
+    return this.uploadService.uploadProfileImage(userId, image);
+  }
+
+  @Delete('profile-image')
+  deleteProfileImage(@User('sub') userId: string) {
+    return this.uploadService.deleteProfileImage(userId);
+  }
 
   @Post('service-image/:serviceId')
   @Role(UserRole.ADMIN)
@@ -42,17 +52,28 @@ export class UploadController {
     @UploadedFile(new ParseFilePipe({ validators: validateUploadImagePipList }))
     image: Express.Multer.File,
     @Param('serviceId', ParseUUIDPipe) serviceId: string,
-  ) {}
+  ) {
+    return this.uploadService.uploadServiceImage(serviceId, image);
+  }
 
-  @Post('component-images/:componentId')
+  @Delete('service-image/:serviceId')
   @Role(UserRole.ADMIN)
   @UseGuards(RoleGuard)
-  @UseInterceptors(FilesInterceptor('images', 10, multerUploadImageOptions))
-  uploadComponentImages(
-    @UploadedFiles(
-      new ParseFilePipe({ validators: validateUploadImagePipList }),
-    )
-    images: Express.Multer.File[],
-    @Param('serviceId', ParseUUIDPipe) serviceId: string,
-  ) {}
+  deleteServiceImage(@Param('serviceId', ParseUUIDPipe) serviceId: string) {
+    return this.uploadService.deleteServiceImage(serviceId);
+  }
+
+  // @Post('component-images/:componentId')
+  // @Role(UserRole.ADMIN)
+  // @UseGuards(RoleGuard)
+  // @UseInterceptors(FilesInterceptor('images', 5, multerUploadImageOptions))
+  // uploadComponentImages(
+  //   @UploadedFiles(
+  //     new ParseFilePipe({ validators: validateUploadImagePipList }),
+  //   )
+  //   images: Express.Multer.File[],
+  //   @Param('serviceId', ParseUUIDPipe) serviceId: string,
+  // ) {
+  //   return this.uploadService.uploadComponentImages(serviceId, images);
+  // }
 }

@@ -6,7 +6,6 @@ import {
   IsInt,
   IsOptional,
   IsString,
-  IsUrl,
   IsUUID,
   Length,
   Min,
@@ -38,10 +37,6 @@ export class CreateComponentDto {
   @IsInt()
   @Min(0)
   estimatedDurationMin: number;
-
-  @IsUrl()
-  @IsOptional()
-  imageUrl?: string;
 
   @IsBoolean()
   @IsOptional()

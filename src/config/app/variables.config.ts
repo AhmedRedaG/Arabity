@@ -1,5 +1,3 @@
-import path from 'path';
-
 export default () => ({
   auth: {
     path: '/auth',
@@ -96,6 +94,11 @@ export default () => ({
   upload: {
     maxImageSize: 5 * 1024 * 1024, // 5MB
     allowedImageTypes: ['jpg', 'jpeg', 'png', 'webp'],
-    uploadDir: path.resolve(process.cwd(), 'uploads'),
+  },
+
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME || 'arabity',
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
   },
 });
