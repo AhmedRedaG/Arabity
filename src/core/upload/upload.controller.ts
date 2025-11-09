@@ -10,6 +10,8 @@ import {
   ParseFilePipe,
   Delete,
   Body,
+  Query,
+  ParseArrayPipe,
 } from '@nestjs/common';
 import { UploadService } from './upload.service';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
@@ -22,7 +24,6 @@ import {
   multerUploadImageOptions,
   validateUploadImagePipList,
 } from 'src/config/app/multer.config';
-import { DeleteImageDto } from './dto/delete-image.dto';
 
 @UseGuards(AuthGuard)
 @Controller('upload')
@@ -63,17 +64,28 @@ export class UploadController {
     return this.uploadService.deleteServiceImage(serviceId);
   }
 
-  // @Post('component-images/:componentId')
-  // @Role(UserRole.ADMIN)
-  // @UseGuards(RoleGuard)
-  // @UseInterceptors(FilesInterceptor('images', 5, multerUploadImageOptions))
-  // uploadComponentImages(
-  //   @UploadedFiles(
-  //     new ParseFilePipe({ validators: validateUploadImagePipList }),
-  //   )
-  //   images: Express.Multer.File[],
-  //   @Param('serviceId', ParseUUIDPipe) serviceId: string,
-  // ) {
-  //   return this.uploadService.uploadComponentImages(serviceId, images);
-  // }
+  @Post('component-images/:componentId')
+  @Role(UserRole.ADMIN)
+  @UseGuards(RoleGuard)
+  @UseInterceptors(FilesInterceptor('images', 5, multerUploadImageOptions))
+  uploadComponentImages(
+    @UploadedFiles(
+      new ParseFilePipe({ validators: validateUploadImagePipList }),
+    )
+    images: Express.Multer.File[],
+    @Param('componentId', ParseUUIDPipe) componentId: string,
+  ) {
+    return this.uploadService.uploadComponentImages(componentId, images);
+  }
+
+  @Delete('component-images/:componentId')
+  @Role(UserRole.ADMIN)
+  @UseGuards(RoleGuard)
+  deleteComponentImages(
+    @Param('componentId', ParseUUIDPipe) componentId: string,
+    @Query('publicIds', new ParseArrayPipe({ items: String }))
+    publicIds: string[],
+  ) {
+    return this.uploadService.deleteComponentImages(componentId, publicIds);
+  }
 }

@@ -1,12 +1,7 @@
-import { Transform, Type } from 'class-transformer';
-import {
-  IsArray,
-  IsOptional,
-  IsString,
-  Length,
-  ValidateNested,
-} from 'class-validator';
-import { ChatMessageDto } from './chat-message.dto';
+import { Transform } from 'class-transformer';
+import { IsArray, IsOptional, IsString, Length } from 'class-validator';
+import { BadRequestException } from '@nestjs/common';
+import { ChatMessage } from 'src/types/chat.types';
 
 export class ChatDto {
   @IsString()
@@ -14,15 +9,13 @@ export class ChatDto {
   message: string;
 
   @IsOptional()
+  @IsArray()
   @Transform(({ value }) => {
     try {
-      return JSON.parse(value);
+      return typeof value === 'string' ? JSON.parse(value) : value;
     } catch {
-      return [];
+      throw new BadRequestException('failed to parse history');
     }
   })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ChatMessageDto)
-  history?: ChatMessageDto[];
+  history?: ChatMessage[];
 }
