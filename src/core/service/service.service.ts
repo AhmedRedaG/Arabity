@@ -143,13 +143,7 @@ export class ServiceService {
     serviceId: string,
     newImage: UploadedImageMainDetails,
   ) {
-    const { image } = await this.findOneBy({ id: serviceId });
-    await this.serviceRepository.update(serviceId, {
-      image: newImage,
-    });
-    return {
-      oldImage: image,
-    };
+    await this.serviceRepository.update(serviceId, { image: newImage });
   }
 
   async removeImage(serviceId: string) {
