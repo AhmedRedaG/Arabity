@@ -120,13 +120,7 @@ export class UserService {
   }
 
   async saveOrUpdateImage(userId: string, newImage: UploadedImageMainDetails) {
-    const { image } = await this.findOneBy({ id: userId });
-    await this.userRepository.update(userId, {
-      image: newImage,
-    });
-    return {
-      oldImage: image,
-    };
+    await this.userRepository.update(userId, { image: newImage });
   }
 
   async removeImage(userId: string) {

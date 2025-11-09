@@ -18,6 +18,7 @@ export class UploadService {
   ) {}
 
   async uploadProfileImage(userId: string, image: Express.Multer.File) {
+    const user = await this.userService.findOneBy({ id: userId });
     try {
       const newImage = await this.cloudinaryUploadService.uploadImage(
         image,
@@ -29,17 +30,14 @@ export class UploadService {
         publicId: newImage.public_id,
       };
 
-      const result = await this.userService.saveOrUpdateImage(
-        userId,
-        imageMainData,
-      );
+      await this.userService.saveOrUpdateImage(userId, imageMainData);
 
-      if (result.oldImage) {
+      if (user.image) {
         this.cloudinaryUploadService
-          .deleteImage(result.oldImage.publicId)
+          .deleteImage(user.image.publicId)
           .catch((err) =>
             console.error(
-              `failed to delete old image ${result.oldImage?.publicId} :`,
+              `failed to delete old image ${user.image?.publicId} :`,
               err,
             ),
           );
@@ -58,19 +56,20 @@ export class UploadService {
   }
 
   async deleteProfileImage(userId: string) {
+    const { oldImage } = await this.userService.removeImage(userId);
     try {
-      const result = await this.userService.removeImage(userId);
-      await this.cloudinaryUploadService.deleteImage(result.oldImage.publicId);
+      await this.cloudinaryUploadService.deleteImage(oldImage.publicId);
       return { message: 'image deleted successfully' };
     } catch (error) {
       if (error.http_code) {
-        throw new BadRequestException('failed to delete image from storage');
+        console.error('failed to delete profile image from storage');
       }
       throw error;
     }
   }
 
   async uploadServiceImage(serviceId: string, image: Express.Multer.File) {
+    const service = await this.serviceService.findOneBy({ id: serviceId });
     try {
       const newImage = await this.cloudinaryUploadService.uploadImage(
         image,
@@ -82,17 +81,14 @@ export class UploadService {
         publicId: newImage.public_id,
       };
 
-      const result = await this.serviceService.saveOrUpdateImage(
-        serviceId,
-        imageMainData,
-      );
+      await this.serviceService.saveOrUpdateImage(service.id, imageMainData);
 
-      if (result.oldImage) {
+      if (service.image) {
         this.cloudinaryUploadService
-          .deleteImage(result.oldImage.publicId)
+          .deleteImage(service.image.publicId)
           .catch((err) =>
             console.error(
-              `failed to delete old image ${result.oldImage?.publicId} :`,
+              `failed to delete old image ${service.image?.publicId} :`,
               err,
             ),
           );
@@ -111,18 +107,72 @@ export class UploadService {
   }
 
   async deleteServiceImage(serviceId: string) {
+    const result = await this.serviceService.removeImage(serviceId);
     try {
-      const result = await this.serviceService.removeImage(serviceId);
       await this.cloudinaryUploadService.deleteImage(result.oldImage.publicId);
       return { message: 'image deleted successfully' };
     } catch (error) {
       if (error.http_code) {
-        throw new BadRequestException('failed to delete image from storage');
+        console.error('failed to delete service image from storage');
       }
       throw error;
     }
   }
 
-  // uploadComponentImages(componentId: string, images: Express.Multer.File[]) {
-  // }
+  async uploadComponentImages(
+    componentId: string,
+    images: Express.Multer.File[],
+  ) {
+    const component = await this.componentService.findOneBy({
+      id: componentId,
+    });
+    if (component.images.length + images.length > 5) {
+      throw new BadRequestException('can not add more than 5 images');
+    }
+    const totalImages = component.images;
+    try {
+      const newImages = await this.cloudinaryUploadService.uploadMultipleImages(
+        images,
+        ImageCategory.COMPONENT,
+      );
+
+      const newImagesMainData: UploadedImageMainDetails[] = newImages.map(
+        (image) => ({
+          url: image.secure_url,
+          publicId: image.public_id,
+        }),
+      );
+
+      totalImages.push(...newImagesMainData);
+
+      await this.componentService.saveOrAddImages(componentId, totalImages);
+
+      return {
+        message: 'images saved successfully',
+        images: totalImages,
+      };
+    } catch (error) {
+      if (error.http_code) {
+        throw new BadRequestException('failed to upload images to storage');
+      }
+      throw error;
+    }
+  }
+
+  async deleteComponentImages(componentId: string, publicIds: string[]) {
+    if (!publicIds.length) {
+      throw new BadRequestException('no image ids provided for deletion');
+    }
+    await this.componentService.removeImages(componentId, publicIds);
+
+    try {
+      await this.cloudinaryUploadService.deleteMultipleImages(publicIds);
+      return { message: 'images deleted successfully' };
+    } catch (error) {
+      if (error.http_code) {
+        console.error('failed to delete component images from storage');
+      }
+      throw error;
+    }
+  }
 }
