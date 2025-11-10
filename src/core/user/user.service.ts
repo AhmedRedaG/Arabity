@@ -109,7 +109,10 @@ export class UserService {
   }
 
   async createGoogleUser(userData: DeepPartial<User>) {
-    return await this.userRepository.save(userData);
+    const user = await this.userRepository.save(userData);
+    await this.authUtilsService.createNewUserAuthAttempt(user.id);
+
+    return user;
   }
 
   async update(id: string, dto: UpdateUserDto) {

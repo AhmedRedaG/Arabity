@@ -40,7 +40,7 @@ export class GoogleAuthService {
         lastName: payload.family_name || 'unknown',
         isVerified: true,
       };
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException('invalid google token');
     }
   }
