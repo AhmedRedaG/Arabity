@@ -29,4 +29,6 @@ export class AuthAttempt extends MainFormat {
   })
   @JoinColumn()
   user: User;
+  @Column('uuid')
+  userId: string;
 }

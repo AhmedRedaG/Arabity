@@ -14,7 +14,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload, JwtTypes } from '../../types/jwt.types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AuthAttempt } from 'src/core/auth/entities/auth-attempt.entity';
+import { AuthAttempt } from 'src/core/auth-utils/entities/auth-attempt.entity';
 import { Otp } from 'src/core/auth/entities/otp.entity';
 import { randomInt } from 'crypto';
 import {
@@ -37,17 +37,21 @@ export class AuthUtilsService {
     private jwtService: JwtService,
   ) {}
 
+  async createNewUserAuthAttempt(userId: string) {
+    await this.authAttemptRepository.save({ userId });
+  }
+
   async validateUser(
     loginDto: LocalLoginDto,
   ): Promise<{ user: User | null; isValid: boolean }> {
     const user = await this.userService.findByEmail(loginDto.email);
-    if (!user) {
+    if (!user || !user.password) {
       return { user: null, isValid: false };
     }
 
     const isValidPassword = await this.validatePassword(
       loginDto.password,
-      user.password!,
+      user.password,
     );
     if (!isValidPassword) {
       return { user, isValid: false };
