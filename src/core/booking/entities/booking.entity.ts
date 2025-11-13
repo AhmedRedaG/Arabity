@@ -71,14 +71,10 @@ export class Booking extends MainFormat {
   @OneToMany(() => Review, (review) => review.booking, { cascade: true })
   reviews: Review[];
 
-  @ManyToOne(() => User, (user) => user.bookings, {
-    onDelete: 'SET NULL',
-    onUpdate: 'SET NULL',
-    cascade: true,
-  })
+  @ManyToOne(() => User, (user) => user.bookings, { onDelete: 'SET NULL' })
   @Index()
   user: User;
-  @Column()
+  @Column({ nullable: true })
   userId: string;
 
   @ManyToOne(() => Car, (car) => car.bookings, {
