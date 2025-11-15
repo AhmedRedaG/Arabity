@@ -22,7 +22,8 @@ export class FirebaseNotificationService {
           clientEmail: this.configService.get<string>('firebase.clientEmail'),
           privateKey: this.configService
             .get<string>('firebase.privateKey')
-            ?.replace(/\\n/g, '\n'),
+            ?.replace(/\\n/g, '\n')
+            ?.replace(/\\\\n/g, '\n'),
         }),
       });
     } else {
