@@ -1,10 +1,9 @@
 {
   "name": "arabity",
-  "version": "1.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "version": "1.0.2",
+  "description": "A comprehensive backend platform for on-demand car maintenance and repair services.",
+  "author": "Ahmed Reda",
+  "license": "MIT",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
