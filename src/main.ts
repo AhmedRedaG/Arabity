@@ -3,9 +3,12 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
+import cors from 'cors';
 
 (async () => {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.use(cors());
 
   app.useGlobalPipes(
     new ValidationPipe({
