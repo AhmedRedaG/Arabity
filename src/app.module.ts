@@ -29,6 +29,7 @@ import { ContactModule } from './core/contact/contact.module';
 import dbConfig from './config/db/db.config';
 import dbProductionConfig from './config/db/db.production.config';
 import variablesConfig from './config/app/variables.config';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -66,7 +67,7 @@ import variablesConfig from './config/app/variables.config';
     CloudinaryUploadModule,
     ContactModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}
