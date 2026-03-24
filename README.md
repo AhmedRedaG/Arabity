@@ -234,51 +234,51 @@ Arabity follows a modular, service-oriented architecture built on NestJS princip
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Client Applications                      │
-│                 (Web/Mobile Frontends)                       │
+│                     Client Applications                                │
+│                 (Web/Mobile Frontends)                                 │
 └────────────────────────┬────────────────────────────────────┘
                          │ HTTP/REST API
-┌────────────────────────▼────────────────────────────────────┐
-│                  NestJS Application                          │
+┌────────────────────────▼───────────────────────────────────┐
+│                  NestJS Application                                    │
 │  ┌────────────────────────────────────────────────────────┐ │
-│  │              Authentication Layer                      │ │
-│  │  - JWT Token Management  - Google OAuth               │ │
-│  │  - Auth Guards & Pipes   - Role-Based Access         │ │
+│  │              Authentication Layer                                │ │
+│  │  - JWT Token Management  - Google OAuth                          │ │
+│  │  - Auth Guards & Pipes   - Role-Based Access                     │ │
 │  └────────────────────────────────────────────────────────┘ │
 │  ┌────────────────────────────────────────────────────────┐ │
-│  │           Core Business Logic Modules                 │ │
-│  │  ┌──────────────┬──────────────┬──────────────┐       │ │
-│  │  │   Service    │   Booking    │   Payment    │       │ │
-│  │  │ Management   │  Management  │ Processing   │       │ │
-│  │  └──────────────┴──────────────┴──────────────┘       │ │
-│  │  ┌──────────────┬──────────────┬──────────────┐       │ │
-│  │  │     User     │    Review    │  Notification       │ │
-│  │  │  Management  │   System     │  & Messaging       │ │
-│  │  └──────────────┴──────────────┴──────────────┘       │ │
+│  │           Core Business Logic Modules                            │ │
+│  │  ┌──────────────┬─────────────┬──────────────┐           │ │
+│  │  │     Service     │    Booking    │     Payment     │           │ │
+│  │  │    Management   │  Management   │    Processing   │           │ │
+│  │  └──────────────┴─────────────┴──────────────┘           │ │
+│  │  ┌──────────────┬──────────────┬──────────────┐          │ │
+│  │  │       User      │     Review     │  Notification   │          │ │
+│  │  │    Management   │     System     │  & Messaging    │          │ │
+│  │  └──────────────┴──────────────┴──────────────┘          │ │
 │  └────────────────────────────────────────────────────────┘ │
 │  ┌────────────────────────────────────────────────────────┐ │
-│  │          External Service Integration                  │ │
-│  │  ┌──────────────┬──────────────┬──────────────┐       │ │
-│  │  │ Cloudinary   │   Firebase   │  Google      │       │ │
-│  │  │  (Storage)   │  (Messaging) │  Gemini (AI) │       │ │
-│  │  └──────────────┴──────────────┴──────────────┘       │ │
-│  │  ┌──────────────┬──────────────┐                      │ │
-│  │  │   Kashier    │   Brevo      │                      │ │
-│  │  │  (Payments)  │   (Email)    │                      │ │
-│  │  └──────────────┴──────────────┘                      │ │
+│  │          External Service Integration                            │ │
+│  │  ┌──────────────┬──────────────┬──────────────┐          │ │
+│  │  │   Cloudinary    │     Firebase   │      Google     │          │ │
+│  │  │    (Storage)    │  (Messaging)   │    Gemini (AI)  │          │ │
+│  │  └──────────────┴──────────────┴──────────────┘          │ │
+│  │  ┌──────────────┬──────────────┐                            │ │
+│  │  │    Kashier      │     Brevo      │                            │ │
+│  │  │   (Payments)    │    (Email)     │                            │ │
+│  │  └──────────────┴──────────────┘                            │ │
 │  └────────────────────────────────────────────────────────┘ │
-└────────────────────────┬────────────────────────────────────┘
-                         │
+└────────────────────────┬───────────────────────────────────┘
+                             │
         ┌────────────────┼────────────────┐
-        │                │                │
-┌───────▼───────┐  ┌────▼─────────┐  ┌──▼──────────────┐
-│  PostgreSQL   │  │  Firebase    │  │  External APIs  │
-│  Database     │  │  Messaging   │  │  - Kashier      │
-│               │  │  Service     │  │  - Cloudinary   │
-└───────────────┘  └──────────────┘  │  - Google Auth  │
-                                      │  - Gemini AI    │
-                                      │  - Brevo        │
-                                      └─────────────────┘
+        │                   │                   │
+┌─────▼─────────┐  ┌───▼─────────┐  ┌───▼──────────────┐
+│    PostgreSQL    │  │     Firebase    │  │    External APIs    │
+│     Database     │  │    Messaging    │  │    - Kashier        │
+│                  │  │     Servi       │  │    - Cloudinary     │
+└───────────────┘  └──────────────┘  │    - Google Auth    │
+                                           │    - Gemini AI      │
+                                           │    - Brevo          │
+                                           └──────────────────┘
 ```
 
 ### Module Organization
